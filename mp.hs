@@ -1,0 +1,219 @@
+import Data.Maybe
+import Data.List
+import Data.Ord
+import Data.Char
+
+-- we differentiate between Perm=Permutation and [Int], 
+-- [Int] is a permutation slice, which is not necesarily a valid
+-- permutation, like [7,6,8]
+-- We expect Perm to be a normalized, a permutation of [1..n]
+type Perm = [Int]
+type Rule = (Perm, Perm)
+type System = [Rule]
+type Equivalence = [Perm]
+
+dom :: System -> [Perm]
+dom system = [target | (target, _) <- system]
+
+-- these two functions are just for testing
+-- they work for permutations up to length 9
+prm :: Int -> Perm
+prm = map digitToInt . show
+
+rule :: Int -> Int -> (Perm, Perm)
+rule r s = (prm r, prm s)
+
+-- best case, we make Perm, Rule, etc. a newtype with show instances
+-- but this will do for now
+show_prm :: Perm -> String
+show_prm prm = if maximum prm < 10 
+                then prm >>= show 
+                else intercalate "," $ map show prm
+
+show_rule :: Rule -> String
+show_rule (t, r) = show_prm t ++ " \\rightarrow " ++ show_prm r 
+
+show_sys :: System -> String
+show_sys = unlines . map show_rule
+
+show_eq :: Equivalence -> String
+show_eq = intercalate " \\equiv " . map show_prm
+
+-- The symmetric group; i.e. permutations of {1,..,n}
+sym :: Int -> [Perm]
+sym n = permutations [1..n]
+
+-- is there a nicer way?
+partitions :: Ord a => [a] -> [[[a]]]
+partitions xs = map tail $ par xs
+    where par [] = [[[]]]
+          par ys = nub $ map sort [b:p | b <- bites ys, p <- par (ys \\ b)]
+          bites [] = [[]]
+          bites ys = nub $ map sort $ [y:p | y <- ys, p <- []:(bites $ delete y ys)]
+
+-- these actions correspond to the core elements in the D_4, we can use them on
+-- permutations by treating them as mesh patterns and applying elements to the
+-- pattern
+actionH :: Perm -> Perm
+actionH perm = map (\i -> length perm - i + 1) perm
+
+actionV :: Perm -> Perm
+actionV = reverse
+
+actionR :: Perm -> Perm
+actionR perm = one_line perm [length perm, length perm - 1..1]
+    where one_line xs ys = map snd $ sort (zip xs ys)
+
+-- all elements in D_4
+actions :: [Perm -> Perm]
+actions = [id
+          ,actionR
+          ,actionR . actionR
+          ,actionR . actionR . actionR
+          ,actionH
+          ,actionV
+          ,actionR . actionH
+          ,actionR . actionV
+          ]
+
+-- function to apply a given symmetry on a collection of equivalences
+apply_symmetry :: (Perm -> Perm) -> [Equivalence] -> [Equivalence]
+apply_symmetry action = map (nub . sort . map action) 
+
+-- can this be done nicer?
+-- given a a list of collections of equivalence relations we find if they appear
+-- again as a rotation/reverse/... and return the representives (WORD BETTER)
+find_core :: [[Equivalence]] -> [[Equivalence]]
+find_core [] = []
+find_core [[]] = []
+find_core [[[]]] = []
+find_core (e:equivs) = e:find_core h
+    where a = filter (/= (apply_symmetry actionH) e) equivs
+          b = filter (/= (apply_symmetry actionV) e) a
+          c = filter (/= (apply_symmetry actionR) e) b
+          d = filter (/= (apply_symmetry (actionR . actionR)) e) c
+          f = filter (/= (apply_symmetry (actionR . actionR . actionR)) e) d
+          g = filter (/= (apply_symmetry (actionR . actionH)) e) f
+          h = filter (/= (apply_symmetry (actionR . actionV)) e) g
+
+-- all possible symmetries of a collection of equivalence relation 
+get_all_turns :: [Equivalence] -> [[Equivalence]]
+get_all_turns equivs = map ($ equivs) $ map apply_symmetry actions 
+
+-- utility functions for finding clusters and applying rules
+-- might copy anders' algorithm applying rules though
+standard :: [Int] -> Perm
+standard s = map (\e -> e - minimum s + 1) s
+      
+ekat :: Int -> [a] -> [a]
+ekat n xs = drop (length xs - n) xs
+
+lift :: Int -> Perm -> [Int]
+lift n = map (+n)
+
+apply_rule :: Rule -> Perm -> Int -> Maybe Perm
+apply_rule (target, result) prm occ = 
+    if standard prm_target == target 
+        then Just $ take occ prm ++ lift (minimum prm_target - 1) result ++ drop (occ+length target) prm
+        else Nothing
+    where prm_target = take (length target) $ drop occ prm
+
+try_apply :: System -> Perm -> [Perm]
+try_apply system perm = catMaybes [apply_rule rule perm i | i <- [0..length perm-2], rule <- system]
+
+-- find normal forms of a permutation given a system
+-- if the system is non-terminating this computation might not end
+normal_forms :: System -> Perm -> [Perm]
+normal_forms system perm = 
+  case try_apply system perm of
+      [] -> [perm]
+      perms -> nub (perms >>= normal_forms system)
+
+-- this is Lemma 3.3
+-- given a system returns a list pairs, first values being clusters of its domain
+-- and second values being a boolean, whether applying one rule from the system
+-- to the permutation will have the same normal form as each other (or the
+-- original permutation) ????? (DO LATER)
+test_confluence :: System -> [(Perm, Bool)]
+test_confluence system = zip domain_clusters 
+                $ map (\l -> nub l == [head l]) 
+                $ map (map (normal_forms system)) 
+                $ map (try_apply system) domain_clusters
+    where domain_clusters = (sortBy . comparing) length $ findSystemClusters system
+
+-- test whether a list of Ints in actually a permutation
+is_permutation :: [Int] -> Bool
+is_permutation s = all (\i -> count i s == 1) [1..length s]
+    where count x = length . filter (x==)
+
+-- the O(r,s), r,s permutations, function in Ander's paper, given two permutation return a 
+-- list of how they can cluster
+findClusters :: Perm -> Perm -> [Perm]
+findClusters s t = filter is_permutation matches
+    where max_len = max (length s) (length t)
+          min_len = min (length s) (length t)
+          squash s t i = s ++ (drop i t)
+          matches = [squash (lift n s) t i | i <- [1..min_len-1], 
+                                             n <- [1..max_len-1], 
+                                             ekat i (lift n s) == take i t]
+                  ++ [squash s (lift n t) i | i <- [1..min_len-1], 
+                                              n <- [1..max_len-1], 
+                                           ekat i s == take i (lift n t)]
+
+-- the O(R), R system, function in Ander's paper, the clusters of a systems
+-- domain
+findSystemClusters :: System -> [Perm]
+findSystemClusters r = [c | p <- dom r, q <- dom r, c <- findClusters p q, not $ null c]
+
+-- check that a collection of equivalences fulfills my condition
+is_cluster_clean :: [Equivalence] -> Bool
+is_cluster_clean = all (any null . friend_clusters)
+
+-- friend_clusters
+friend_clusters :: Equivalence -> [[Perm]]
+friend_clusters eq = map (\p -> delete p eq >>= flip findClusters p) eq
+
+-- given a terminating system, try to make it confluent
+confluentize :: System -> Maybe System
+confluentize system
+  | all snd con = Just system
+  | last system == added_rule = Nothing
+  | otherwise = confluentize (system ++ [added_rule])
+  where con = test_confluence system
+        added_rule = (head $ try_apply system splitter, last $ try_apply system splitter)
+        splitter = fst $ head $ filter (not . snd) con
+
+trim :: System -> System
+trim = filter (\(r,t) -> r /= t)
+
+make_cfl_system :: [Equivalence] -> Maybe ([Equivalence], System)
+make_cfl_system equivs 
+  | not $ is_cluster_clean equivs = Nothing
+  | otherwise = maybe Nothing (\r -> Just (equivs, r)) (confluentize base_system)
+    where base_system = concatMap make_rules equivs
+          make_rules eq = map (\x -> (x, cluster_clean eq)) (delete (cluster_clean eq) eq)
+          cluster_clean eq = fromJust $ lookup True (cluster_cleans eq)
+          cluster_cleans eq = zip (map null $ friend_clusters eq) eq
+
+alls = tail 
+  $ filter is_cluster_clean 
+  $ map (filter (\p -> length p > 1)) 
+  $ partitions $ sym 3
+
+test = filter (isJust . snd)
+  $ map (\(a, b) -> (a, listToMaybe $ catMaybes b))
+  $ map (\(a, b) -> (a, map make_cfl_system b))
+  $ map (\x -> (x, get_all_turns x)) alls
+
+main = do
+    let okay_systems = catMaybes $ map make_cfl_system alls
+    let ok2 = catMaybes $ map snd $ test
+
+    mapM_ putStrLn 
+        $ map (\(e, d) -> 
+            "(" ++ (show $ map show_eq e) 
+                ++ ", " ++ (show $ map show_rule d) 
+                ++ "," ++ (show $ dom d) 
+                ++ ", " ++ (show [((p, q), c) | p <- dom d, q <- dom d, c <- findClusters p q, not $ null c]) 
+                ++ ")") $ ok2
+
