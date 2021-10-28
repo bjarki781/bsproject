@@ -12,6 +12,9 @@ type Rule = (Perm, Perm)
 type System = [Rule]
 type Equivalence = [Perm]
 
+length_sort :: Ord a => [[a]] -> [[a]]
+length_sort = (sortBy . comparing) length 
+
 dom :: System -> [Perm]
 dom system = [target | (target, _) <- system]
 
@@ -139,7 +142,7 @@ test_confluence system = zip domain_clusters
                 $ map (\l -> nub l == [head l]) 
                 $ map (map (normal_forms system)) 
                 $ map (try_apply system) domain_clusters
-    where domain_clusters = (sortBy . comparing) length $ findSystemClusters system
+    where domain_clusters = length_sort $ findSystemClusters system
 
 -- test whether a list of Ints in actually a permutation
 is_permutation :: [Int] -> Bool
@@ -165,13 +168,12 @@ findClusters s t = filter is_permutation matches
 findSystemClusters :: System -> [Perm]
 findSystemClusters r = [c | p <- dom r, q <- dom r, c <- findClusters p q, not $ null c]
 
--- check that a collection of equivalences fulfills my condition
-is_cluster_clean :: [Equivalence] -> Bool
-is_cluster_clean = all (any null . friend_clusters)
+goodness_test :: Equivalence -> Perm -> Maybe Perm
+goodness_test eq p = if null $ concatMap (\q -> if q !! 2 == p !! 2 then [] else findClusters q p) (delete p eq) then Just p else Nothing
 
 -- friend_clusters
-friend_clusters :: Equivalence -> [[Perm]]
-friend_clusters eq = map (\p -> delete p eq >>= flip findClusters p) eq
+good_images :: Equivalence -> [Perm]
+good_images eq = mapMaybe (goodness_test eq) eq
 
 -- given a terminating system, try to make it confluent
 confluentize :: System -> Maybe System
@@ -183,20 +185,23 @@ confluentize system
         added_rule = (head $ try_apply system splitter, last $ try_apply system splitter)
         splitter = fst $ head $ filter (not . snd) con
 
-trim :: System -> System
-trim = filter (\(r,t) -> r /= t)
+combos :: Ord a => [[a]] -> [[a]]
+combos [] = [[]]
+combos [[]] = [[]]
+combos xs = if any (==[]) xs then [] else [a:b | a <- head xs, b <- combos (tail xs)]
 
-make_cfl_system :: [Equivalence] -> Maybe ([Equivalence], System)
-make_cfl_system equivs 
-  | not $ is_cluster_clean equivs = Nothing
-  | otherwise = maybe Nothing (\r -> Just (equivs, r)) (confluentize base_system)
-    where base_system = concatMap make_rules equivs
-          make_rules eq = map (\x -> (x, cluster_clean eq)) (delete (cluster_clean eq) eq)
-          cluster_clean eq = fromJust $ lookup True (cluster_cleans eq)
-          cluster_cleans eq = zip (map null $ friend_clusters eq) eq
+-- given a collection of equivalences we return a list of possible terminating
+-- systems
+make_systems :: [Equivalence] -> [System]
+make_systems equivs = map concat $ if combos rules == [[]] then [] else combos rules
+    where make_rules eq image = map (\x -> (x, image)) (delete image eq)
+          rules = map (\eq -> map (make_rules eq) $ good_images eq) equivs
+
+make_cfl_system :: [Equivalence] -> Maybe System
+make_cfl_system equivs = listToMaybe $ length_sort confluent_systems
+    where confluent_systems = mapMaybe confluentize $ make_systems equivs
 
 alls = tail 
-  $ filter is_cluster_clean 
   $ map (filter (\p -> length p > 1)) 
   $ partitions $ sym 3
 
@@ -206,8 +211,7 @@ test = filter (isJust . snd)
   $ map (\x -> (x, get_all_turns x)) alls
 
 main = do
-    let okay_systems = catMaybes $ map make_cfl_system alls
-    let ok2 = catMaybes $ map snd $ test
+    let ok2 = map (\(e, d) -> (e, fromJust d)) $ test
 
     mapM_ putStrLn 
         $ map (\(e, d) -> 

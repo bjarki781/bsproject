@@ -1,6 +1,9 @@
 from sage.combinat.species.generating_series import *
 import sys
 
+K = FractionField(PolynomialRing(QQ, "x"))
+x = K.gen()
+
 # note that here the variable T is always the set of subwords/subsequences
 # that we want to find the distribution of.
 # m is the size of T's alphabet 
@@ -18,22 +21,19 @@ def wam(T, clusters):
     # if not is_reduced(set(T)):
     #     print("Patterns given aren't reduced")
 
-    us = [var('x')]
-    for i in range(1, len(T)+1):
-        us.append(var('u' + str(i)))
-
-    K = FractionField(PolynomialRing(QQ, us))
-
+    K = FractionField(PolynomialRing(QQ, x))
     mat = matrix(K, len(T)+1, len(T)+1, 0)
 
+    # (-1) here is u_k in the paper
     for i in range(1, len(T)+1):
-        mat[0,i] = us[i] * x^len(T[i-1])
+        mat[0,i] = (-1) * x^len(T[i-1])
 
     for pair in clusters:
         p, q = pair[0]
         i = T.index(p)
         j = T.index(q)
-        mat[i+1,j+1] += us[j+1]*x^(len(pair[1])-len(p))
+        # again here
+        mat[i+1,j+1] += (-1)*x^(len(pair[1])-len(p))
 
     return mat
 
@@ -41,28 +41,23 @@ def mremoved(M, i, j):
     return M.delete_rows([i-1]).delete_columns([j-1])
 
 def C(T, clusters):
-    if len(T) > 7:
-        return 0
-    submap = {}
-    for i in range(1, len(T)+1):
-        submap.update({var('u'+str(i)):-1})
     A = wam(T, clusters)
     I = identity_matrix(A.nrows())
     f = sum([(-1)^i * det(mremoved(I - A, i+1, 1)) for i in range(1, len(T)+1)])
     C = (1/det(I - A)) * f
     F = x + C
-    return F.substitute(submap)
+    return F
 
 def sequence(expression, n):
     F = sum([factorial(m)*expression^m for m in range(n+1)])
     R = PowerSeriesRing(QQ,"x",default_prec=15)
     t = list(R(F))[1:n]
     if oeis.find_by_subsequence(t, 1):
-        return (t, oeis.find_by_subsequence(t, 1)[0].id())
-    return (t, 'Not found')
+        return (tuple(t), oeis.find_by_subsequence(t, 1)[0].id())
+    return (tuple(t), 'Not found')
 
 
-def generate_latex(expr_dict):
+def generate_latex(seq_dict):
     print('\\documentclass{article}')
     print('\\usepackage{amsmath}')
     print('\\usepackage{geometry}')
@@ -71,13 +66,14 @@ def generate_latex(expr_dict):
     print('\\allowdisplaybreaks')
     print('\\begin{document}')
     
-    for e in expr_dict:
+    for e in seq_dict:
         print('$$')
         print('\\begin{matrix}')
         print('\\sum_{m \geq 0} m! \\left(')
-        print(latex(e))
+        equivs, R, domain, clusters, expr = seq_dict[e][0]
+        print(latex(expr))
         print('\\right)^m')
-        seq, name = sequence(e, 8)
+        seq, name = e
         print(latex(seq))
         print('\\texttt{')
         print(name)
@@ -85,8 +81,8 @@ def generate_latex(expr_dict):
         print('\\end{matrix}')
         print('$$')
         print('\\begin{align}')
-        for i, d in enumerate(expr_dict[e]):
-            equivs, R, domain, clusters = d
+        for i, d in enumerate(seq_dict[e]):
+            equivs, R, domain, clusters, expr = d
             for j in range(0, len(equivs)):
                 print(equivs[j])
                 print('\\quad')
@@ -98,7 +94,7 @@ def generate_latex(expr_dict):
                     print('\\\\')
             print('\\end{matrix}')
 
-            if i != len(expr_dict[e]) - 1:
+            if i != len(seq_dict[e]) - 1:
                 print('\\\\')
         print('\\end{align}')
 
@@ -106,15 +102,16 @@ def generate_latex(expr_dict):
 
 
 master = {}
-
 for line in sys.stdin:
     t = eval(line)
     equivs, system, domain, clusters = t
     expr = C(domain, clusters)
-    if expr not in master:
-        master[expr] = [t]
+    s = sequence(expr, 8)
+    u = (equivs, system, domain, clusters, expr)
+    if s not in master:
+        master[s] = [u]
     else:
-        master[expr].append(t)
+        master[s].append(u)
 
 generate_latex(master)
 
