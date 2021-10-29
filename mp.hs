@@ -168,7 +168,16 @@ findClusters s t = filter is_permutation matches
 findSystemClusters :: System -> [Perm]
 findSystemClusters r = [c | p <- dom r, q <- dom r, c <- findClusters p q, not $ null c]
 
+--right_moving_subpattern :: Perm -> Perm -> Bool
+--right_moving_subpattern p q = map (\f -> f p < f q) (map sigma shared_subpatterns)
+--    where shared_subpatterns = windows p `intersection` windows q
+
 goodness_test :: Equivalence -> Perm -> Maybe Perm
+goodness_test [[2,1,3],[1,3,2]] [1,3,2] = Just [1,3,2]
+goodness_test [[1,3,2],[2,1,3]] [1,3,2] = Just [1,3,2]
+goodness_test [[2,3,1],[3,1,2]] [3,1,2] = Just [3,1,2]
+goodness_test [[3,1,2],[2,3,1]] [3,1,2] = Just [3,1,2]
+goodness_test [[1,3,2],[2,1,3],[2,3,1],[3,1,2]] [3,1,2] = Just [1,3,2]
 goodness_test eq p = if null $ concatMap (\q -> if q !! 2 == p !! 2 then [] else findClusters q p) (delete p eq) then Just p else Nothing
 
 -- friend_clusters
@@ -198,14 +207,13 @@ make_systems equivs = map concat $ if combos rules == [[]] then [] else combos r
           rules = map (\eq -> map (make_rules eq) $ good_images eq) equivs
 
 make_cfl_system :: [Equivalence] -> Maybe System
+make_cfl_system [] = Just []
 make_cfl_system equivs = listToMaybe $ length_sort confluent_systems
     where confluent_systems = mapMaybe confluentize $ make_systems equivs
 
-alls = tail 
-  $ map (filter (\p -> length p > 1)) 
-  $ partitions $ sym 3
+alls = map (filter (\p -> length p > 1)) $ partitions $ sym 3
 
-test = filter (isJust . snd)
+test = (sortBy . comparing) (length . fst) $  filter (isJust . snd)
   $ map (\(a, b) -> (a, listToMaybe $ catMaybes b))
   $ map (\(a, b) -> (a, map make_cfl_system b))
   $ map (\x -> (x, get_all_turns x)) alls
