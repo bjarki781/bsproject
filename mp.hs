@@ -199,23 +199,26 @@ combos [] = [[]]
 combos [[]] = [[]]
 combos xs = if any (==[]) xs then [] else [a:b | a <- head xs, b <- combos (tail xs)]
 
+make_system :: [Equivalence] -> Maybe System
+make_system = make_cfl_system . make_terminating_systems 
+
 -- given a collection of equivalences we return a list of possible terminating
 -- systems
-make_systems :: [Equivalence] -> [System]
-make_systems equivs = map concat $ if combos rules == [[]] then [] else combos rules
+make_terminating_systems :: [Equivalence] -> [System]
+make_terminating_systems equivs = map concat $ if combos rules == [[]] then [] else combos rules
     where make_rules eq image = map (\x -> (x, image)) (delete image eq)
           rules = map (\eq -> map (make_rules eq) $ good_images eq) equivs
 
-make_cfl_system :: [Equivalence] -> Maybe System
+make_cfl_system :: [System] -> Maybe System
 make_cfl_system [] = Just []
-make_cfl_system equivs = listToMaybe $ length_sort confluent_systems
-    where confluent_systems = mapMaybe confluentize $ make_systems equivs
+make_cfl_system systems = listToMaybe $ length_sort confluent_systems
+    where confluent_systems = mapMaybe confluentize systems
 
 alls = map (filter (\p -> length p > 1)) $ partitions $ sym 3
 
 test = (sortBy . comparing) (length . fst) $  filter (isJust . snd)
   $ map (\(a, b) -> (a, listToMaybe $ catMaybes b))
-  $ map (\(a, b) -> (a, map make_cfl_system b))
+  $ map (\(a, b) -> (a, map make_system b))
   $ map (\x -> (x, get_all_turns x)) alls
 
 main = do
