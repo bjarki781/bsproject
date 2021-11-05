@@ -18,6 +18,9 @@ length_sort = (sortBy . comparing) length
 dom :: System -> [Perm]
 dom system = [target | (target, _) <- system]
 
+img :: System -> [Perm]
+img system = [result | (_, result) <- system]
+
 -- these two functions are just for testing
 -- they work for permutations up to length 9
 prm :: Int -> Perm
@@ -40,7 +43,7 @@ show_sys :: System -> String
 show_sys = unlines . map show_rule
 
 show_eq :: Equivalence -> String
-show_eq = intercalate " \\equiv " . map show_prm
+show_eq = show 
 
 -- The symmetric group; i.e. permutations of {1,..,n}
 sym :: Int -> [Perm]
@@ -194,6 +197,40 @@ confluentize system
         added_rule = (head $ try_apply system splitter, last $ try_apply system splitter)
         splitter = fst $ head $ filter (not . snd) con
 
+windows :: Int -> [a] -> [[a]]
+windows m = foldr (zipWith (:)) (repeat []) . take m . tails
+
+offset :: (Eq a, Num a) => [a] -> [a] -> Maybe a
+offset xs ys =
+  case nub (zipWith (-) xs ys) of
+    [d] -> Just d
+    _ -> Nothing
+
+occurrences :: [Perm] -> Perm -> [(Int, Perm)]
+occurrences ps xs =
+  concatMap (\p ->
+  catMaybes $
+  zipWith (\i v -> (i, v) <$ offset p v)
+      [0..]
+      (windows (length p) xs)) ps
+
+sigma :: [Perm] -> Perm -> Int
+sigma ps w = sum $ map (succ . fst) (occurrences ps w)
+
+sigma_of_rule :: [Perm] -> Rule -> Int
+sigma_of_rule p (r,t) = sigma p t - sigma p r
+
+confluentize_alt :: System -> Maybe System
+confluentize_alt system
+  | all snd con = Just system
+  | last system == added_rule = Just system
+  | otherwise = confluentize_alt (system ++ [added_rule])
+  where con = test_confluence system
+        added_rule = head $ (sortBy . comparing) (negate . sigma_of_rule (img system)) rules
+        rules = [(r,t) | let forms = normal_forms system splitter, r <- forms, t <- delete r forms ]
+        splitter = head [ w | n<-[1..], w <- sym n, length (normal_forms system w) > 1 ]
+
+
 combos :: Ord a => [[a]] -> [[a]]
 combos [] = [[]]
 combos [[]] = [[]]
@@ -201,6 +238,9 @@ combos xs = if any (==[]) xs then [] else [a:b | a <- head xs, b <- combos (tail
 
 make_system :: [Equivalence] -> Maybe System
 make_system = make_cfl_system . make_terminating_systems 
+
+make_system_alt :: [Equivalence] -> Maybe System
+make_system_alt = make_cfl_system_alt . make_terminating_systems 
 
 -- given a collection of equivalences we return a list of possible terminating
 -- systems
@@ -214,19 +254,31 @@ make_cfl_system [] = Just []
 make_cfl_system systems = listToMaybe $ length_sort confluent_systems
     where confluent_systems = mapMaybe confluentize systems
 
+make_cfl_system_alt :: [System] -> Maybe System
+make_cfl_system_alt [] = Just []
+make_cfl_system_alt systems = listToMaybe $ length_sort confluent_systems
+    where confluent_systems = mapMaybe confluentize_alt systems
+
 alls = map (filter (\p -> length p > 1)) $ partitions $ sym 3
 
-test = (sortBy . comparing) (length . fst) $  filter (isJust . snd)
+test = 
+  filter (isJust . snd)
   $ map (\(a, b) -> (a, listToMaybe $ catMaybes b))
   $ map (\(a, b) -> (a, map make_system b))
   $ map (\x -> (x, get_all_turns x)) alls
 
+test2 = 
+  filter (isJust . snd)
+  $ map (\(a, b) -> (a, listToMaybe $ catMaybes b))
+  $ map (\(a, b) -> (a, map make_system_alt b))
+  $ map (\x -> (x, get_all_turns x)) (alls \\ (map fst test))
+
 main = do
-    let ok2 = map (\(e, d) -> (e, fromJust d)) $ test
+    let ok2 = map (\(e, d) -> (e, fromJust d)) $ (sortBy . comparing) (length . fst) $ test ++ test2
 
     mapM_ putStrLn 
         $ map (\(e, d) -> 
-            "(" ++ (show $ map show_eq e) 
+            "(" ++ (show e) 
                 ++ ", " ++ (show $ map show_rule d) 
                 ++ "," ++ (show $ dom d) 
                 ++ ", " ++ (show [((p, q), c) | p <- dom d, q <- dom d, c <- findClusters p q, not $ null c]) 

@@ -57,6 +57,13 @@ def sequence(expression, n):
     return (tuple(t), 'Not found')
 
 
+def show_permutation(prm):
+    return ''.join([str(d) for d in prm])
+
+def show_equivalence(eq):
+    return '\\equiv'.join([show_permutation(prm) for prm in eq])
+
+
 def generate_latex(seq_dict):
     print('\\documentclass{article}')
     print('\\usepackage{amsmath}')
@@ -70,7 +77,7 @@ def generate_latex(seq_dict):
         print('$$')
         print('\\begin{matrix}')
         print('\\sum_{m \geq 0} m! \\left(')
-        equivs, R, domain, clusters, expr = seq_dict[e][0]
+        equivs, R, domain, clusters, expr, match = seq_dict[e][0]
         print(latex(expr))
         print('\\right)^m')
         seq, name = e
@@ -82,9 +89,16 @@ def generate_latex(seq_dict):
         print('$$')
         print('\\begin{align}')
         for i, d in enumerate(seq_dict[e]):
-            equivs, R, domain, clusters, expr = d
+            equivs, R, domain, clusters, expr, match = d
+            if match:
+                print('\\text{RRR}')
+            else:
+                print('\\text{VVV}')
+
+            print('\\quad')
+
             for j in range(0, len(equivs)):
-                print(equivs[j])
+                print(show_equivalence(equivs[j]))
                 print('\\quad')
             print('&')
             print('\\begin{matrix}')
@@ -96,10 +110,15 @@ def generate_latex(seq_dict):
 
             if i != len(seq_dict[e]) - 1:
                 print('\\\\')
+
         print('\\end{align}')
 
     print('\\end{document}')
 
+verify_data = {}
+for line in open('verify_data', 'r'):
+    equivs, seq = eval(line)
+    verify_data[str(equivs)] = seq
 
 master = {}
 for line in sys.stdin:
@@ -107,7 +126,14 @@ for line in sys.stdin:
     equivs, system, domain, clusters = t
     expr = C(domain, clusters)
     s = sequence(expr, 8)
-    u = (equivs, system, domain, clusters, expr)
+    match = False
+    try:
+        ver_seq = verify_data[str(equivs)]
+        match = tuple(ver_seq) == s[0][0:7]
+    except KeyError:
+        pass
+        
+    u = (equivs, system, domain, clusters, expr, match)
     if s not in master:
         master[s] = [u]
     else:
