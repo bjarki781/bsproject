@@ -1,0 +1,277 @@
+\documentclass[a4paper, 11pt]{article}
+\usepackage[top=3.17cm, bottom=3.27cm, left=3.5cm, right=3.5cm]{geometry}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{latexsym}
+\usepackage{amsmath,amsthm,amssymb,amsfonts}
+\usepackage{eucal}
+\usepackage[english]{babel}
+\usepackage{tikz}
+\usepackage{epsfig}
+\usepackage{amssymb, graphicx, amsmath, amsthm}
+\usepackage{calrsfs}
+\DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
+\RequirePackage{graphicx}
+\RequirePackage{hyperref}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{openproblem}[theorem]{Open Problem}
+\newtheorem*{openproblem*}{Open Problem}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem*{remark*}{Remark}
+\newtheorem{example}[theorem]{Example}
+\newtheorem*{example*}{Example}
+
+\newcommand{\eps}{\epsilon}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\etal}{et~al.}
+\newcommand{\Sym}{\mathpzc{S}}
+\newcommand{\Pow}{\mathcal{P}}
+\newcommand{\Ocal}{\mathcal{O}}
+\newcommand{\emptyword}{\varepsilon}
+\newcommand{\id}{\mathrm{id}}
+\newcommand{\rid}{\overline{\id}}
+\newcommand{\from}{\leftarrow}
+\newcommand{\eq}{\leftrightarrow}
+\newcommand{\eqstar}{\stackrel{*}{\leftrightarrow}}
+\newcommand{\tostar}{\stackrel{*}{\to}}
+\newcommand{\toplus}{\stackrel{+}{\to}}
+\newcommand{\fromstar}{\stackrel{*}{\from}}
+\newcommand{\nf}[1]{{#1\!\downarrow}}
+\newcommand{\floor}[1]{\lfloor#1\rfloor}
+\newcommand{\bracket}[1]{[\mskip1mu #1\mskip1mu]}
+\DeclareMathOperator{\olap}{\mathcal{O}}
+\DeclareMathOperator{\dom}{dom}
+\DeclareMathOperator{\img}{img}
+\DeclareMathOperator{\des}{des}
+\DeclareMathOperator{\maj}{maj}
+\DeclareMathOperator{\len}{len}
+\DeclareMathOperator{\shr}{shr}
+
+\begin{document}
+
+\title{Enumerating all Hertzsprung symmetric group 3 equivalence classes}
+\author{Bjarki Hartjenstein Gunnarsson}
+\date{\today}
+\maketitle
+
+\begin{abstract}
+    In this paper we introduce a method that allows us to systematically find
+    terminating systems, given an equivalence relation. This allows us to
+    enumerate the equivalence classes the corresponding relation splits
+    elements of $\Sym_n$. This in turn allows us to determine the Wilf-classes
+    of some family of relations, in this paper all set partitions of $\Sym_3$.
+\end{abstract}
+
+\section{Introduction}
+Hertzsprung patterns are permutation patterns in which both positions and values are
+required to be adjacent.
+
+Juxtaposition of permutations signifies catenation, so if $\pi=123$ and
+$\tau=321$ then $\pi\tau=123654$.
+
+\subsection{Equivalence classes and motivation}
+An equivalence relation is a family of sets of permutations.  We consider
+permutations in those sets to be equivalent.  An equivalence relation on $\Sym =
+\cup_{n \geq 1} \Sym_n$ splits each $\Sym_n$ into a set of equivalence classes.
+We want to enumerate those classes.  Work has been done on classical patterns
+and (other type linton).  We will look exclusively at equivalence relations of
+Hertzsprung patterns.  To do this we will introduce pattern-rewriting systems.
+
+\subsection{Pattern-rewriting systems}
+A pattern-rewriting system is a subset $R \subset \cup_n \Sym_n \times \Sym_n$. 
+This subset induces a relation on $\Sym$ in the following way: We say
+permutations $p, q \in \Sym_k$ relate if there exists $(\alpha,\beta) \in R$ so 
+we can write $p = \sigma \alpha \tau$ and $q = \sigma \beta \tau$, where
+$\sigma$ and $\tau$ are some permutations.
+Note that the relation is length-preserving.
+For example, if $R = {123 \to 321}$, then $1234$ relates to $3214$.
+The domain of $R$ we denote by $\dom(R) = {\alpha : (\alpha, \beta) \in R}$.
+The image of $R$ we in turn denote $\img(R) = {\beta : (\alpha, \beta) \in R}$.
+We denote the reflexive transitive closure of $R$ as $\tostar$, that
+is, any number of applications of $R$.
+
+An element $x$ in $\Sym$ is said to be in normal form under system $R$ if there
+is no $y \in \Sym$ so that $x \to_R y$. The relation induced by the system is
+said to be terminating if there exist no infinite chains $x_0 \to x_1 \to
+\cdots$. If $\to$ is terminating then every element has a normal form. 
+
+A relation is confluent if and only if
+$$
+    y_1 \leftarrow x \to y_2 \Longrightarrow \quad 
+    \exists. y_1 \to z \leftarrow y_2
+$$.
+
+If a system is both terminating and confluent, then every element has a one and
+only one normal form. Church-Rosser?
+
+\begin{corollary}
+    If $R$ is a terminating and confluent pattern-rewriting system, then the set
+    of $\dom(R)$-avoiding permutations in $S_n$ is a complete set of
+    representives for $S_n / \equiv$, the set of equivalence classes of
+    $\equiv$.
+\end{corollary}
+
+So the problem is reduced to finding a terminating and confluent system $R$ for
+an equivalence relation and then enumerating $\dom(R)$-avoiding permutations.
+Section 2 of Anders' paper provides us with a way to do that. \cite{claesson}
+
+With this paper we set out to develop a mechanical test for termination.
+
+When finding systems, we begin with naive systems that terminate, and which we
+then make confluent. Naive systems are made up of small systems/rule groups that
+correspond to each equivalence in an equivalence relation.
+
+\begin{lemma}
+    With a naive system that is terminating, then it's possible to preserve its
+    termination when making it confluent.
+\end{lemma}
+\begin{proof}
+    By ensuring that all rules that are added have a positive sigma difference
+    we can be certain that a system is still confluent. 
+\end{proof}
+
+\section{Finding terminating naive systems}
+Claesson only found systems corresponding to equivalence relations containing a single equivalence but we will
+introduce a method for finding systems having any number of equivalences.
+Each equivalece in an equivalence relation has at least two small systems.
+\begin{example}
+    The equivalence $123 \equiv 321$ has two rule groups, namely $\{123 \to
+    321\}$ and $\{321 \to 123\}$. The same goes for $132 \equiv 312$, $\{132 \to
+    312\}$ and $\{312 \to 132\}$.
+
+    Then the relation $\{123 \equiv 321, 132 \equiv 312\}$ has for possible
+    naive systems: $\{123 \to 321, 132 \to 312\}$, $\{123 \to 321, 312 \to
+    132\}$, etc.
+\end{example}
+A system is composed of rule classes catenated together.
+
+A statistic is any function $f : S \to \mathbb{N}$. We call $f$ an increasing
+statistic if $\pi \to \sigma$ implies that $f(\pi) < f(\sigma)$.
+
+\begin{lemma}
+    Let $R$ be a pattern-rewriting system. If there exists an increasing
+    statistic with respect to $R$, then $\to$ is terminating.    
+\end{lemma}
+
+So the problem becomes finding a terminating and confluent system of a given
+equivalence relation. In this paper I will introduce a systematic way to find
+terminating systems and explain its backfalls.
+
+First we can reduce the amount we check by the symmetries of the square.
+If we show that a system is both terminating and confluent, then all systems
+which we can arrive at through mirroring the permutations etc are also
+terminating and confluent.
+
+Let's begin focussing on \emph{small systems}. That is, systems, which have only
+a single pattern as their image. A small system corresponds to an equivalence.
+We then catenate a family the small systems to create a system that correponds
+to a respective family of equivalences.
+
+\begin{lemma}
+    Let $E$ be a small system. If $\pi \to \rho$ is in $E$ and 
+    \begin{equation}
+        \sum\nolimits_\rho(u\pi v) < \sum\nolimits_\rho(u \rho v)
+    \end{equation}
+    then $\sum$ parameterized by the image of $E$ is an increasing statistic on
+    $E$.
+\end{lemma}
+\begin{proof}
+    If $\pi \to \rho$ is in $E$ then we see $\sum_\rho(\pi) <
+    \sum_\rho(\rho)$.  We see that each application of a rule of the system
+    will only make the resulting permutation have a higher sigma value.
+\end{proof}
+
+\begin{lemma}
+    Let $E$ be a small system with $\{\rho\} = \img(E)$. If
+    \[
+        \pi_i(-l_i, 0) = \rho(-l_i, 0) \quad \textnormal{where} \quad l_i :=
+        \len(\shr(\pi_i, \rho)) \tag{$\ast$} \label{joininvariance}
+    \]
+    for each $\pi_i \to \rho \in E$ then $E$ fulfills condition
+    \eqref{joininvariance}. Note that
+    when $l_i = 0$ then $\Ocal(\pi_i, \rho) = \emptyset$.
+\end{lemma}
+\begin{proof}
+    Let us assume that we have a rule in $R$, namely $\pi \to \rho$ and so
+    $0 = \sum_\rho(\pi) < \sum_\rho(\rho) = 1$. Then $u \pi v \to u \rho v$. 
+    If $\rho$ is fully contained in either $u$ or $v$ then $\to$ won't have any
+    implication for those occurences. If $\rho$ appears in $u\pi$ then
+    application of the rule will move it further to the right, increasing the
+    value of sigma. If $\rho$ appears in $\pi v$ then we assume it's static for
+    that part so we will have two occurences of $\rho$, one where $\pi$ was and
+    then we did not alter other one.
+
+    We can see that every application of rules from $R$ will increase.
+\end{proof}
+
+\begin{lemma}
+    If a family of small systems have increasing statistics then the sum of the
+    statistics is increasing for the catenation of the family of smalll systems. 
+\end{lemma}
+\begin{proof}
+    Each rule application will increase the sum statistic.
+\end{proof}
+
+\begin{definition}
+    Let the statistic $\sum_\tau$ be the sum of the positions of occurences of
+    the pattern $\tau$. We can use this as a terminating statistic.
+    \cite{claesson}.
+
+    A sigma statistic parameterized by a set of patterns is simply defined as
+    $$
+        \sum\nolimits_{\{\tau_0, ..., \tau_n\}}(x) = \sum_{i=0}^{n} \sum\nolimits_{\tau_i}(x).
+    $$.
+\end{definition}
+
+With this new definiton we can work with equivalence relations that contain more than one
+equivalence.
+
+\begin{theorem}
+    Let $R$ be a system composed of the small systems $E_i$ which fulfill
+    condition (*). We say ${\rho_i} = \img(E_i)$. Then $\sum\nolimits_{\rho_i}$ 
+    is an increasing statistic for each $E_i$ and then by lemma X we have an increasing statistic for $R$.
+    The system $R$ is hence terminating.
+\end{theorem}
+
+This theorem works very well for finding terminating systems to begin
+confluentize, but it does not work for every possible equivalence relation.
+Take ... for example
+But here sigma parameterized by a smaller statistic, namely $12$, is an
+increasing statistic.
+
+So for each equivalence relation we can check if there is an image that fulfills
+our lemma and if so, use it.
+
+This works for all systems except those containing the relation $231 \equiv $
+
+\section{Application, result and verification}
+There are 10 different combinatorial classes.
+\subsection{Programming}
+There were three small programs written for the project: mp for generating the
+systems from the equivalence relations, mp2 for taking the domain of these
+systems and calculating the generating functions and finding if their sequences
+were found in the OEIS, and finally tester which calculates the first 5 values
+of the sequences manually. mp and tester were written in Haskell and mp2 in SageMath. 
+
+
+\section{Problems, questions, remarks}
+Are there larger systems, for example from $\Sym_4$, where we cannot apply the
+methods used in this paper?
+
+\bibliographystyle{plain}
+\bibliography{mp}
+
+\end{document}

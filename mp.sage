@@ -129,7 +129,7 @@ for line in sys.stdin:
     match = False
     try:
         ver_seq = verify_data[str(equivs)]
-        match = tuple(ver_seq) == s[0][0:7]
+        match = tuple(ver_seq) == s[0][0:6]
     except KeyError:
         pass
         

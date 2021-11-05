@@ -1,0 +1,13 @@
+mp
+tester
+*.blg
+*.out
+*.o
+*.aux
+*.log
+*.pdf
+*.bbl
+*.spyx
+*.sage.py
+*.hi
+*.prof

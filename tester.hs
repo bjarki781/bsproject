@@ -60,15 +60,12 @@ ekat n xs = drop (length xs - n) xs
 lift :: Int -> Perm -> [Int]
 lift n = map (+n)
 
-apply_rule :: Rule -> Perm -> Int -> Maybe Perm
-apply_rule (target, result) prm occ = 
-    if standard prm_target == target 
-        then Just $ take occ prm ++ lift (minimum prm_target - 1) result ++ drop (occ+length target) prm
-        else Nothing
+apply_rule :: Rule -> Perm -> Int -> Perm
+apply_rule (target, result) prm occ = take occ prm ++ lift (minimum prm_target - 1) result ++ drop (occ+length target) prm
     where prm_target = take (length target) $ drop occ prm
 
 try_apply :: Rule -> Perm -> [Perm]
-try_apply rule perm = catMaybes [apply_rule rule perm i | i <- [0..length perm-2]]
+try_apply rule@(t,r) perm = [apply_rule rule perm i | i <- map fst $ occurrences t perm]
 
 apply_rules :: [(Perm, Perm)] -> Perm -> [Perm]
 apply_rules rus p = nub $ p:(concatMap (\rule -> try_apply rule p) rus)
