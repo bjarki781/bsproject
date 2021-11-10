@@ -25,7 +25,7 @@ partitions xs = map tail $ par xs
           bites ys = nub $ map sort $ [y:p | y <- ys, p <- []:(bites $ delete y ys)]
 
 main = do
-    mapM_ print $ tester
+    mapM_ print $ map snd tester
 
 tester = map (\eqs -> (eqs, test 6 eqs)) $ map (filter (\p -> length p > 1)) $ partitions $ sym 3
 

@@ -175,6 +175,7 @@ findSystemClusters r = [c | p <- dom r, q <- dom r, c <- findClusters p q, not $
 --right_moving_subpattern p q = map (\f -> f p < f q) (map sigma shared_subpatterns)
 --    where shared_subpatterns = windows p `intersection` windows q
 
+-- this needs to be for all equivalences
 goodness_test :: Equivalence -> Perm -> Maybe Perm
 goodness_test [[2,1,3],[1,3,2]] [1,3,2] = Just [1,3,2]
 goodness_test [[1,3,2],[2,1,3]] [1,3,2] = Just [1,3,2]
@@ -206,27 +207,33 @@ offset xs ys =
     [d] -> Just d
     _ -> Nothing
 
-occurrences :: [Perm] -> Perm -> [(Int, Perm)]
-occurrences ps xs =
-  concatMap (\p ->
+occurrences :: Perm -> Perm -> [(Int, Perm)]
+occurrences xs p =
   catMaybes $
   zipWith (\i v -> (i, v) <$ offset p v)
       [0..]
-      (windows (length p) xs)) ps
+      (windows (length p) xs) 
 
-sigma :: [Perm] -> Perm -> Int
-sigma ps w = sum $ map (succ . fst) (occurrences ps w)
+sigma :: Perm -> Perm -> Int
+sigma p w = sum $ map (succ . fst) $ occurrences w p
+
+mult_sigma ps w = sum $ map (flip sigma w) ps
+
+ssigma ps w =  sum $ zipWith (*) (map (base^) [0..]) $ reverse $ sigma_list ps w
+    where base = (length w) * (length w - 1) `div` 2
+          sigma_list ps w = map (flip sigma w) ps
 
 sigma_of_rule :: [Perm] -> Rule -> Int
-sigma_of_rule p (r,t) = sigma p t - sigma p r
+sigma_of_rule p (r,t) = mult_sigma p t - mult_sigma p r
 
 confluentize_alt :: System -> Maybe System
 confluentize_alt system
   | all snd con = Just system
   | last system == added_rule = Just system
+  | maximum (map (sigma_of_rule (img system)) rules) == 0 = Nothing
   | otherwise = confluentize_alt (system ++ [added_rule])
   where con = test_confluence system
-        added_rule = head $ (sortBy . comparing) (negate . sigma_of_rule (img system)) rules
+        added_rule = maximumBy (comparing (sigma_of_rule (img system))) rules 
         rules = [(r,t) | let forms = normal_forms system splitter, r <- forms, t <- delete r forms ]
         splitter = head [ w | n<-[1..], w <- sym n, length (normal_forms system w) > 1 ]
 
@@ -250,16 +257,16 @@ make_terminating_systems equivs = map concat $ if combos rules == [[]] then [] e
           rules = map (\eq -> map (make_rules eq) $ good_images eq) equivs
 
 make_cfl_system :: [System] -> Maybe System
-make_cfl_system [] = Just []
+make_cfl_system [] = Nothing
 make_cfl_system systems = listToMaybe $ length_sort confluent_systems
     where confluent_systems = mapMaybe confluentize systems
 
 make_cfl_system_alt :: [System] -> Maybe System
-make_cfl_system_alt [] = Just []
+make_cfl_system_alt [] = Nothing
 make_cfl_system_alt systems = listToMaybe $ length_sort confluent_systems
     where confluent_systems = mapMaybe confluentize_alt systems
 
-alls = map (filter (\p -> length p > 1)) $ partitions $ sym 3
+alls = tail $ map (filter (\p -> length p > 1)) $ partitions $ sym 3
 
 test = 
   filter (isJust . snd)
@@ -274,7 +281,7 @@ test2 =
   $ map (\x -> (x, get_all_turns x)) (alls \\ (map fst test))
 
 main = do
-    let ok2 = map (\(e, d) -> (e, fromJust d)) $ (sortBy . comparing) (length . fst) $ test ++ test2
+    let ok2 = map (\(e, d) -> (e, fromJust d)) $ ([],Just []): test ++ test2
 
     mapM_ putStrLn 
         $ map (\(e, d) -> 

@@ -13,6 +13,7 @@
 \usepackage{epsfig}
 \usepackage{amssymb, graphicx, amsmath, amsthm}
 \usepackage{calrsfs}
+\usepackage{todonotes}
 \DeclareMathAlphabet{\mathpzc}{OT1}{pzc}{m}{it}
 \RequirePackage{graphicx}
 \RequirePackage{hyperref}
@@ -62,7 +63,7 @@
 
 \begin{document}
 
-\title{Enumerating all Hertzsprung symmetric group 3 equivalence classes}
+\title{Enumerating Hertzsprung equivalence classes defined by partitions of the symmetric group of degree 3}
 \author{Bjarki Hartjenstein Gunnarsson}
 \date{\today}
 \maketitle
@@ -82,13 +83,23 @@ required to be adjacent.
 Juxtaposition of permutations signifies catenation, so if $\pi=123$ and
 $\tau=321$ then $\pi\tau=123654$.
 
-\subsection{Equivalence classes and motivation}
-An equivalence relation is a family of sets of permutations.  We consider
-permutations in those sets to be equivalent.  An equivalence relation on $\Sym =
-\cup_{n \geq 1} \Sym_n$ splits each $\Sym_n$ into a set of equivalence classes.
-We want to enumerate those classes.  Work has been done on classical patterns
-and (other type linton).  We will look exclusively at equivalence relations of
-Hertzsprung patterns.  To do this we will introduce pattern-rewriting systems.
+\subsection{Equivalence, equivalence classes and motivation}
+An equivalence relation is defined by a family of sets of permutations. We
+consider all permutations in each set to be equivalent to each other. An
+equivalence relation on $\Sym = \cup_{n \geq 1} \Sym_n$ splits each $\Sym_n$
+into a set of equivalence classes.  We want to enumerate those classes.  Work
+has been done on classical patterns and (other type linton)...  We will focus
+exclusively on equivalence relations of Hertzsprung patterns. 
+
+\begin{example}
+    If we say $123 \equiv 321, 231 \equiv 312$ then we consider the permutations
+    $1234, 3214$ and $1432$ equivalent, and $1342$ and $1423$ equivalent.
+\end{example}
+
+The equivalence relation splits $\Sym$ into equivalence classes. We want to
+enumerate those classes.
+
+To do this we will introduce pattern-rewriting systems.
 
 \subsection{Pattern-rewriting systems}
 A pattern-rewriting system is a subset $R \subset \cup_n \Sym_n \times \Sym_n$. 
@@ -110,12 +121,12 @@ said to be terminating if there exist no infinite chains $x_0 \to x_1 \to
 
 A relation is confluent if and only if
 $$
-    y_1 \leftarrow x \to y_2 \Longrightarrow \quad 
-    \exists. y_1 \to z \leftarrow y_2
+    y_1 \fromstar x \tostar y_2 \Longrightarrow 
+    \exists z. \  y_1 \tostar z \fromstar y_2
 $$.
 
 If a system is both terminating and confluent, then every element has a one and
-only one normal form. Church-Rosser?
+only one normal form.
 
 \begin{corollary}
     If $R$ is a terminating and confluent pattern-rewriting system, then the set
@@ -124,67 +135,76 @@ only one normal form. Church-Rosser?
     $\equiv$.
 \end{corollary}
 
-So the problem is reduced to finding a terminating and confluent system $R$ for
-an equivalence relation and then enumerating $\dom(R)$-avoiding permutations.
-Section 2 of Anders' paper provides us with a way to do that. \cite{claesson}
+So the problem is reduced to generating a terminating and confluent system $R$
+given a sets of equivalent partitions then enumerating $\dom(R)$-avoiding permutations.
+Section 2 of Claesson's paper provides us with a way to do that. \cite{claesson}
 
-With this paper we set out to develop a mechanical test for termination.
+We begin with finding systems that terminate, and which we then make confluent.
+These terminating systems are composed of single-image systems that each are
+created from a respective equivalence relation.
 
-When finding systems, we begin with naive systems that terminate, and which we
-then make confluent. Naive systems are made up of small systems/rule groups that
-correspond to each equivalence in an equivalence relation.
+\begin{definition}
+    Let the statistic $\sum_\tau$ be the sum of the positions of occurences of
+    the pattern $\tau$. We can use this as an increasing statistic.
+    \cite{claesson}.
+\end{definition}
 
-\begin{lemma}
-    With a naive system that is terminating, then it's possible to preserve its
-    termination when making it confluent.
-\end{lemma}
-\begin{proof}
-    By ensuring that all rules that are added have a positive sigma difference
-    we can be certain that a system is still confluent. 
-\end{proof}
-
-\section{Finding terminating naive systems}
-Claesson only found systems corresponding to equivalence relations containing a single equivalence but we will
-introduce a method for finding systems having any number of equivalences.
-Each equivalece in an equivalence relation has at least two small systems.
-\begin{example}
-    The equivalence $123 \equiv 321$ has two rule groups, namely $\{123 \to
-    321\}$ and $\{321 \to 123\}$. The same goes for $132 \equiv 312$, $\{132 \to
-    312\}$ and $\{312 \to 132\}$.
-
-    Then the relation $\{123 \equiv 321, 132 \equiv 312\}$ has for possible
-    naive systems: $\{123 \to 321, 132 \to 312\}$, $\{123 \to 321, 312 \to
-    132\}$, etc.
-\end{example}
-A system is composed of rule classes catenated together.
-
-A statistic is any function $f : S \to \mathbb{N}$. We call $f$ an increasing
-statistic if $\pi \to \sigma$ implies that $f(\pi) < f(\sigma)$.
+\subsection{Increasing statistics}
+A statistic is any function $f : \Sym \to \mathbb{N}$. We call $f$ an increasing
+statistic on $R$ if $\pi \to \sigma$ implies that $f(\pi) < f(\sigma)$ for all
+$\pi \to \sigma \in R$.
 
 \begin{lemma}
     Let $R$ be a pattern-rewriting system. If there exists an increasing
     statistic with respect to $R$, then $\to$ is terminating.    
 \end{lemma}
 
-So the problem becomes finding a terminating and confluent system of a given
-equivalence relation. In this paper I will introduce a systematic way to find
-terminating systems and explain its backfalls.
+Let's take one example from Claesson's paper.
+\begin{example}
+    Let's look at the equivalence $12 \equiv 21$. We can choose the system 
+    $\{ 21 \to 12 \}$. This is terminating since the statistic $\sum_{12}$ is
+    increasing for that system. It's not confluent though, since $321 \to 231$
+    and $321 \to 312$. So we add the rule $231 \to 312$ to the system and we
+    have a confluent system by Lemma 3.3 in Claesson's paper. 
 
-First we can reduce the amount we check by the symmetries of the square.
-If we show that a system is both terminating and confluent, then all systems
-which we can arrive at through mirroring the permutations etc are also
-terminating and confluent.
+    By his machinery we find that $\sum_{n \geq 1} \Sym_n(21) = \sum_{m \geq 0}
+    m!(x-x^2)^m$ which is the joint distribution of the equivalence classes
+    defined by $12 \equiv 21$.
+\end{example}
 
-Let's begin focussing on \emph{small systems}. That is, systems, which have only
-a single pattern as their image. A small system corresponds to an equivalence.
-We then catenate a family the small systems to create a system that correponds
-to a respective family of equivalences.
+\section{Finding terminating systems systematically}
+In Claesson's paper, he only found systems corresponding to equivalence
+relations induced by a single set of patterns. We will introduce a method for
+finding systems for equivalence relations induced by any number of sets.
+
+Let's begin focussing on \emph{single-image systems}. That is, systems, which
+have only a single pattern as their image. Claesson only looked at these kinds
+of systems. A single-image system corresponds to a set of patterns which we
+consider equivalent. We then catenate a family the single-image systems to
+create a system that correponds to a respective family of equivalences.
+
+\begin{example}
+    The equivalence $123 \equiv 321$ allows two single-image systems, namely $\{123 \to
+    321\}$ and $\{321 \to 123\}$. The same goes for $132 \equiv 312$, $\{132 \to
+    312\}$ and $\{312 \to 132\}$.
+
+    Then the relation $\{123 \equiv 321, 132 \equiv 312\}$ can then generate
+    four possible systems: $\{123 \to 321, 132 \to 312\}$, $\{123 \to 321, 312
+    \to 132\}$, etc.
+\end{example}
+
+\todo{
+Let's explain why catenating single-image systems works
+}
+
+Let us introduce a method for determining the termination of a system.
 
 \begin{lemma}
-    Let $E$ be a small system. If $\pi \to \rho$ is in $E$ and 
-    \begin{equation}
-        \sum\nolimits_\rho(u\pi v) < \sum\nolimits_\rho(u \rho v)
-    \end{equation}
+    Let $E$ be a single-image system. If $\pi \to \rho$ is in $E$ and 
+    \[
+        \sum\nolimits_\rho(u\pi v) < \sum\nolimits_\rho(u \rho v) \tag{$\ast$}
+        \label{increasingimage}
+    \]
     then $\sum$ parameterized by the image of $E$ is an increasing statistic on
     $E$.
 \end{lemma}
@@ -195,17 +215,21 @@ to a respective family of equivalences.
 \end{proof}
 
 \begin{lemma}
-    Let $E$ be a small system with $\{\rho\} = \img(E)$. If
+    Let $E$ be a single-image system with $\{\rho\} = \img(E)$. If
     \[
-        \pi_i(-l_i, 0) = \rho(-l_i, 0) \quad \textnormal{where} \quad l_i :=
-        \len(\shr(\pi_i, \rho)) \tag{$\ast$} \label{joininvariance}
+        \pi_i[-l_i, 0] = \rho[-l_i, 0] \quad \textnormal{where} \quad l_i :=
+        \len(\shr(\pi_i, \rho)) \tag{$\ast\ast$} \label{joininvariance}
     \]
     for each $\pi_i \to \rho \in E$ then $E$ fulfills condition
-    \eqref{joininvariance}. Note that
-    when $l_i = 0$ then $\Ocal(\pi_i, \rho) = \emptyset$.
+    \eqref{increasingimage}. The notation treats the permutations as lists in
+    python with the same slicing behaviour. Here $\shr(\alpha, \beta)$ signifies the part
+    where, if $\alpha$ and $\beta$ form a cluster, they share. $\shr(132, 213) =
+    32$. We assume that they just have one cluster, since we're not clustering
+    the same pattern, 123 and 123, for example. $\len$ is just the length of
+    a pattern.
 \end{lemma}
 \begin{proof}
-    Let us assume that we have a rule in $R$, namely $\pi \to \rho$ and so
+    Let us assume that we have a rule in $E$, namely $\pi \to \rho$ and so
     $0 = \sum_\rho(\pi) < \sum_\rho(\rho) = 1$. Then $u \pi v \to u \rho v$. 
     If $\rho$ is fully contained in either $u$ or $v$ then $\to$ won't have any
     implication for those occurences. If $\rho$ appears in $u\pi$ then
@@ -213,49 +237,73 @@ to a respective family of equivalences.
     value of sigma. If $\rho$ appears in $\pi v$ then we assume it's static for
     that part so we will have two occurences of $\rho$, one where $\pi$ was and
     then we did not alter other one.
-
     We can see that every application of rules from $R$ will increase.
 \end{proof}
 
-\begin{lemma}
-    If a family of small systems have increasing statistics then the sum of the
-    statistics is increasing for the catenation of the family of smalll systems. 
-\end{lemma}
-\begin{proof}
-    Each rule application will increase the sum statistic.
-\end{proof}
+So by taking applying two lemmas together we have that if a single-image system
+fulfills \eqref{joininvariance} then sigma parameterized by the image of $E$ is
+an increasing statistic. Hence $E$ is terminating.
 
 \begin{definition}
-    Let the statistic $\sum_\tau$ be the sum of the positions of occurences of
-    the pattern $\tau$. We can use this as a terminating statistic.
-    \cite{claesson}.
-
     A sigma statistic parameterized by a set of patterns is simply defined as
     $$
         \sum\nolimits_{\{\tau_0, ..., \tau_n\}}(x) = \sum_{i=0}^{n} \sum\nolimits_{\tau_i}(x).
     $$.
+    We see this is an increasing statistic for a concatenation of systems if
+    each system has an increasing $\sum_{\tau_i}$.  Each rule application will
+    increase one statistic, and then the whole sum of the statistics.
 \end{definition}
 
 With this new definiton we can work with equivalence relations that contain more than one
 equivalence.
 
 \begin{theorem}
-    Let $R$ be a system composed of the small systems $E_i$ which fulfill
-    condition (*). We say ${\rho_i} = \img(E_i)$. Then $\sum\nolimits_{\rho_i}$ 
-    is an increasing statistic for each $E_i$ and then by lemma X we have an increasing statistic for $R$.
+    Let $R$ be a system composed of the single-image systems $E_i$ which fulfill
+    condition \eqref{joininvariance}. We say $\{\rho_i\} = \img(E_i)$. Then $\sum\nolimits_{\rho_i}$ 
+    is an increasing statistic for each $E_i$ and then by summing these
+    statistics together we have an increasing statistic for $R$.
     The system $R$ is hence terminating.
 \end{theorem}
 
-This theorem works very well for finding terminating systems to begin
-confluentize, but it does not work for every possible equivalence relation.
-Take ... for example
-But here sigma parameterized by a smaller statistic, namely $12$, is an
-increasing statistic.
+This theorem works well but it does not work for every possible equivalence relation.
+Take the equivalence $213 \equiv 132$ for example, none of its single-image systems fulfill
+\eqref{joininvariance} and when we apply some symmetries to it, we get $312
+\equiv 231$ which has the same problem.
 
-So for each equivalence relation we can check if there is an image that fulfills
-our lemma and if so, use it.
+But for $213 \equiv 132$ sigma parameterized by a smaller statistic, namely $21$, is an
+increasing statistic so $\{ 213 \to 132 \}$ is a terminating system.
 
-This works for all systems except those containing the relation $231 \equiv $
+With these observation we are able to find terminating systems for all set
+partitions on $\Sym_3$.
+
+\todo{this definition is just me spitballing}
+\begin{definition}
+    So an appearence of one image will increase the statistic more then the
+    appearence of another type of image.
+
+    Each application of the system will increase the statistic somewhat.
+
+    If some image can cluster after permutations in domains then we let that
+    image have more priority than the other images. (is there a system where two
+    images cluster before each other???
+
+    Does it solve the problem of 231=312?
+\end{definition}
+
+\section{Making a terminating system confluent}
+First we can reduce the amount we check by the symmetries of the square.
+If we show that a system is both terminating and confluent, then all systems
+which we can arrive at through mirroring the permutations etc are also
+terminating and confluent.
+
+I have not found one algorithm that can make all systems confluent.
+I'm using two.
+
+With a system that is terminating, then it's possible to preserve its
+termination when making it confluent.
+By ensuring that all rules that are added have a positive sigma difference
+we can be certain that a system is still confluent. 
+
 
 \section{Application, result and verification}
 There are 10 different combinatorial classes.
@@ -263,7 +311,7 @@ There are 10 different combinatorial classes.
 There were three small programs written for the project: mp for generating the
 systems from the equivalence relations, mp2 for taking the domain of these
 systems and calculating the generating functions and finding if their sequences
-were found in the OEIS, and finally tester which calculates the first 5 values
+were found in the OEIS, and finally tester which calculates the first 6 values
 of the sequences manually. mp and tester were written in Haskell and mp2 in SageMath. 
 
 

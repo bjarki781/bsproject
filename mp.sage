@@ -52,9 +52,10 @@ def sequence(expression, n):
     F = sum([factorial(m)*expression^m for m in range(n+1)])
     R = PowerSeriesRing(QQ,"x",default_prec=15)
     t = list(R(F))[1:n]
-    if oeis.find_by_subsequence(t, 1):
+    try:
         return (tuple(t), oeis.find_by_subsequence(t, 1)[0].id())
-    return (tuple(t), 'Not found')
+    except:
+        return (tuple(t), 'Not found')
 
 
 def show_permutation(prm):
@@ -63,6 +64,10 @@ def show_permutation(prm):
 def show_equivalence(eq):
     return '\\equiv'.join([show_permutation(prm) for prm in eq])
 
+def nub(seq):
+    seen = set()
+    seen_add = seen.add
+    return [x for x in seq if not (x in seen or seen_add(x))]
 
 def generate_latex(seq_dict):
     print('\\documentclass{article}')
@@ -76,10 +81,15 @@ def generate_latex(seq_dict):
     for e in seq_dict:
         print('$$')
         print('\\begin{matrix}')
-        print('\\sum_{m \geq 0} m! \\left(')
-        equivs, R, domain, clusters, expr, match = seq_dict[e][0]
-        print(latex(expr))
-        print('\\right)^m')
+        exprs = []
+        for _, _, _, _, expr, _ in seq_dict[e]:
+            exprs.append(expr)
+
+        for express in nub(exprs):
+            print('\\sum_{m \geq 0} m! \\left(')
+            print(latex(express))
+            print('\\right)^m')
+
         seq, name = e
         print(latex(seq))
         print('\\texttt{')
