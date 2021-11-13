@@ -63,23 +63,21 @@
 
 \begin{document}
 
-\title{Enumerating Hertzsprung equivalence classes defined by partitions of the symmetric group of degree 3}
+\title{Enumerating Hertzsprung Equivalence Classes Defined by Partitions of the Symmetric Group of Degree 3}
 \author{Bjarki Hartjenstein Gunnarsson}
 \date{\today}
 \maketitle
 
 \begin{abstract}
-    In this paper we introduce a method that allows us to systematically find
-    terminating systems, given an equivalence relation. This allows us to
-    enumerate the equivalence classes the corresponding relation splits
-    elements of $\Sym_n$. This in turn allows us to determine the Wilf-classes
-    of some family of relations, in this paper all set partitions of $\Sym_3$.
+    Hertzsprung patterns are permutation patterns in which both positions and
+    values are required to be adjacent. Families of equivalences of these
+    patterns induce equivalence classes. In this paper we introduce a method
+    that allows us, given an equivalence relation, to enumerate these
+    equivalence classes. This in turn allows us to determine the Wilf-classes of
+    all the set partitions of $\Sym_3$.
 \end{abstract}
 
 \section{Introduction}
-Hertzsprung patterns are permutation patterns in which both positions and values are
-required to be adjacent.
-
 Juxtaposition of permutations signifies catenation, so if $\pi=123$ and
 $\tau=321$ then $\pi\tau=123654$.
 
@@ -88,31 +86,34 @@ An equivalence relation is defined by a family of sets of permutations. We
 consider all permutations in each set to be equivalent to each other. An
 equivalence relation on $\Sym = \cup_{n \geq 1} \Sym_n$ splits each $\Sym_n$
 into a set of equivalence classes.  We want to enumerate those classes.  Work
-has been done on classical patterns and (other type linton)...  We will focus
+has been done on classical patterns and ... \cite{linton}  We will focus
 exclusively on equivalence relations of Hertzsprung patterns. 
 
 \begin{example}
     If we say $123 \equiv 321, 231 \equiv 312$ then we consider the permutations
-    $1234, 3214$ and $1432$ equivalent, and $1342$ and $1423$ equivalent.
+    $1234, 3214$ and $1432$ equivalent, they belong together in an equivalence
+    class. On the other hand are permutations $1342$ and $1423$ equivalent and belong in
+    another class.
 \end{example}
 
-The equivalence relation splits $\Sym$ into equivalence classes. We want to
-enumerate those classes.
-
-To do this we will introduce pattern-rewriting systems.
+To enumerate these different equivalence classes this we will introduce
+pattern-rewriting systems.
 
 \subsection{Pattern-rewriting systems}
-A pattern-rewriting system is a subset $R \subset \cup_n \Sym_n \times \Sym_n$. 
-This subset induces a relation on $\Sym$ in the following way: We say
-permutations $p, q \in \Sym_k$ relate if there exists $(\alpha,\beta) \in R$ so 
-we can write $p = \sigma \alpha \tau$ and $q = \sigma \beta \tau$, where
-$\sigma$ and $\tau$ are some permutations.
-Note that the relation is length-preserving.
-For example, if $R = {123 \to 321}$, then $1234$ relates to $3214$.
-The domain of $R$ we denote by $\dom(R) = {\alpha : (\alpha, \beta) \in R}$.
-The image of $R$ we in turn denote $\img(R) = {\beta : (\alpha, \beta) \in R}$.
-We denote the reflexive transitive closure of $R$ as $\tostar$, that
-is, any number of applications of $R$.
+A pattern-rewriting system is a subset $R \subset \cup_n \Sym_n \times \Sym_n$.
+We use the notation $(\alpha \to \beta)$ for $(\alpha, \beta)$ for elements of
+$R$.
+We can make this subset induce a \emph{rewrite relation} on $\Sym$ in the following way: We say
+$p \to_R q$ for $p, q \in \Sym_k$ if there exists $(\alpha \to \beta) \in R$ so
+we can write $p = u \alpha v$ and $q = u \beta v$, where
+$u$ and $v$ are some permutations.  Note that the relation is
+length-preserving.  For example, if $R = {(123 \to 321)}$, then $1234$ relates to
+$3214$. The domain of $R$ we denote by $\dom(R) = \{\alpha : (\alpha \to \beta) \in
+R\}$. The image of $R$ we in turn denote $\img(R) = \{\beta : (\alpha \to \beta) \in
+R\}$. We denote the reflexive transitive closure of $R$ as $\tostar_R$, that is,
+any number of applications of $R$. We denote the equivalence closure as
+$\equiv_R$. We can skip the subscript if the system that's being discussed is
+unamibiguous. 
 
 An element $x$ in $\Sym$ is said to be in normal form under system $R$ if there
 is no $y \in \Sym$ so that $x \to_R y$. The relation induced by the system is
@@ -122,8 +123,8 @@ said to be terminating if there exist no infinite chains $x_0 \to x_1 \to
 A relation is confluent if and only if
 $$
     y_1 \fromstar x \tostar y_2 \Longrightarrow 
-    \exists z. \  y_1 \tostar z \fromstar y_2
-$$.
+    \exists z. \  y_1 \tostar z \fromstar y_2.
+$$
 
 If a system is both terminating and confluent, then every element has a one and
 only one normal form.
@@ -143,16 +144,16 @@ We begin with finding systems that terminate, and which we then make confluent.
 These terminating systems are composed of single-image systems that each are
 created from a respective equivalence relation.
 
-\begin{definition}
-    Let the statistic $\sum_\tau$ be the sum of the positions of occurences of
-    the pattern $\tau$. We can use this as an increasing statistic.
-    \cite{claesson}.
-\end{definition}
-
 \subsection{Increasing statistics}
 A statistic is any function $f : \Sym \to \mathbb{N}$. We call $f$ an increasing
 statistic on $R$ if $\pi \to \sigma$ implies that $f(\pi) < f(\sigma)$ for all
 $\pi \to \sigma \in R$.
+
+\begin{definition}
+    Let the statistic $\sum_\tau$ be the sum of the positions of occurences of
+    the pattern $\tau$. 
+    \cite{claesson}.
+\end{definition}
 
 \begin{lemma}
     Let $R$ be a pattern-rewriting system. If there exists an increasing
@@ -173,31 +174,28 @@ Let's take one example from Claesson's paper.
 \end{example}
 
 \section{Finding terminating systems systematically}
-In Claesson's paper, he only found systems corresponding to equivalence
-relations induced by a single set of patterns. We will introduce a method for
-finding systems for equivalence relations induced by any number of sets.
+Claesson only found systems corresponding to equivalence relations induced by a
+single set of equivalent patterns. We will introduce a method for finding
+systems for equivalence relations induced by any number of sets.
 
 Let's begin focussing on \emph{single-image systems}. That is, systems, which
-have only a single pattern as their image. Claesson only looked at these kinds
-of systems. A single-image system corresponds to a set of patterns which we
-consider equivalent. We then catenate a family the single-image systems to
+have only a single pattern as their image. Claesson looked at these kinds
+of systems. A single-image system corresponds to a set of patterns.
+We then catenate a family the single-image systems to
 create a system that correponds to a respective family of equivalences.
 
 \begin{example}
-    The equivalence $123 \equiv 321$ allows two single-image systems, namely $\{123 \to
-    321\}$ and $\{321 \to 123\}$. The same goes for $132 \equiv 312$, $\{132 \to
-    312\}$ and $\{312 \to 132\}$.
+    The equivalence $123 \equiv 321$ allows two single-image systems, namely
+    $\{(123 \to 321)\}$ or $\{(321 \to 123)\}$. The same goes for $132 \equiv 312$,
+    $\{(132 \to 312)\}$ or $\{(312 \to 132)\}$.
 
-    Then the relation $\{123 \equiv 321, 132 \equiv 312\}$ can then generate
-    four possible systems: $\{123 \to 321, 132 \to 312\}$, $\{123 \to 321, 312
-    \to 132\}$, etc.
+    Then the equivalence family $\{123 \equiv 321, 132 \equiv 312\}$ can then generate
+    four possible systems: $\{(123 \to 321), (132 \to 312)\}$, $\{(123 \to 321),
+    (312 \to 132)\}$, etc.
 \end{example}
 
-\todo{
-Let's explain why catenating single-image systems works
-}
-
-Let us introduce a method for determining the termination of a system.
+Let us introduce a method for determining a terminating system given an
+equivalence of patterns.
 
 \begin{lemma}
     Let $E$ be a single-image system. If $\pi \to \rho$ is in $E$ and 
@@ -214,20 +212,23 @@ Let us introduce a method for determining the termination of a system.
     will only make the resulting permutation have a higher sigma value.
 \end{proof}
 
+Let us introduce some notation. Let $\pi$ be a permutation, we can then take a
+slice of that permutation by $\pi[i:j]$ which means we take digits of $\pi$ from
+position $i$ up to (not including) position $j$. A negative index signifies that
+we index from the right hand side, instead of the left hand side. We also let $\shr(\alpha,
+\beta)$ signify the part where, if $\alpha$ and $\beta$ form a cluster, they
+share. $\shr(132, 213) = 32$. We assume that they just have one cluster, since
+we're not clustering the same pattern, 123 and 123, for example. $\len$ is just
+the length of a subpermutation.
+
 \begin{lemma}
     Let $E$ be a single-image system with $\{\rho\} = \img(E)$. If
     \[
-        \pi_i[-l_i, 0] = \rho[-l_i, 0] \quad \textnormal{where} \quad l_i :=
+        \pi_i[-l_i:0] = \rho[-l_i:0] \quad \textnormal{where} \quad l_i :=
         \len(\shr(\pi_i, \rho)) \tag{$\ast\ast$} \label{joininvariance}
     \]
     for each $\pi_i \to \rho \in E$ then $E$ fulfills condition
-    \eqref{increasingimage}. The notation treats the permutations as lists in
-    python with the same slicing behaviour. Here $\shr(\alpha, \beta)$ signifies the part
-    where, if $\alpha$ and $\beta$ form a cluster, they share. $\shr(132, 213) =
-    32$. We assume that they just have one cluster, since we're not clustering
-    the same pattern, 123 and 123, for example. $\len$ is just the length of
-    a pattern.
-\end{lemma}
+    \eqref{increasingimage}. \end{lemma}
 \begin{proof}
     Let us assume that we have a rule in $E$, namely $\pi \to \rho$ and so
     $0 = \sum_\rho(\pi) < \sum_\rho(\rho) = 1$. Then $u \pi v \to u \rho v$. 
@@ -240,15 +241,24 @@ Let us introduce a method for determining the termination of a system.
     We can see that every application of rules from $R$ will increase.
 \end{proof}
 
-So by taking applying two lemmas together we have that if a single-image system
+So by looking at the two lemmas together we have that if a single-image system
 fulfills \eqref{joininvariance} then sigma parameterized by the image of $E$ is
 an increasing statistic. Hence $E$ is terminating.
 
+Let us turn to families of equivalences which can generate systems with more
+than one image.
+
+\begin{lemma}
+    A number of single image systems catenated together induce an equivalence
+    relation that is the same as define by a family of equivalences
+    corresponding to each system.
+\end{lemma}
+
 \begin{definition}
-    A sigma statistic parameterized by a set of patterns is simply defined as
+    A sigma statistic parameterized by a set of patterns is defined as
     $$
         \sum\nolimits_{\{\tau_0, ..., \tau_n\}}(x) = \sum_{i=0}^{n} \sum\nolimits_{\tau_i}(x).
-    $$.
+    $$
     We see this is an increasing statistic for a concatenation of systems if
     each system has an increasing $\sum_{\tau_i}$.  Each rule application will
     increase one statistic, and then the whole sum of the statistics.
@@ -306,7 +316,57 @@ we can be certain that a system is still confluent.
 
 
 \section{Application, result and verification}
-There are 10 different combinatorial classes.
+There are 10 different Wilf-classes for the equivalences of partitions of $S_3$.
+
+The joint distribution is always on the form $\sum_{m \geq 0}m!C(x)^m$ where $C$
+is the cluster generating function corresponding to the system.
+
+A formula appears for the cluster generating function, $C_n(x) = x-nx^3$, $n$ being the number of rules
+in the terminating system generated from the equivalence family.
+\begin{center}
+\begin{tabular}{c|c|c|c}
+    $n$ & $C(x)$ & count & OEIS seq. \\
+    \hline
+    0 & $x$ & 1 & A000142 \\
+    1 & $x-x^3$ & 15 & A212580 \\
+    2 & $x-2x^3$ & 63 & A212432 \\
+    3 & $x-3x^3$ & 78 & Not present \\
+    4 & $x-4x^3$ & 18 & Not present \\
+\end{tabular}
+\end{center}
+This formula constitutes 175 of the 203 equivalence relations.
+
+\begin{center}
+\begin{tabular}{c|c|c|c}
+    $n$ & $C(x)$ & count & OEIS seq. \\
+    \hline
+    2 & $\frac{x+x^2-x^3-x^4}{x^2+x+1}$ & 2 & A212581 \\
+    3 & $\frac{x+x^2-2x^3-2x^4-x^5}{x^2+x+1}$ & 12 & A212433 \\
+    4 & $\frac{x+x^2-3x^3-3x^4-2x^5}{x^2+x+1}$ & 12 & Not present\\
+\end{tabular}
+\end{center}
+We see if the parameterize $C(x)$ by $n$ we get the following equation.
+\[
+    C_n(x) = \frac{x+x^2-(n-1)x^3-(n-1)x^4-(n-2)x^5}{x^2+x+1}
+\]
+
+\begin{center}
+\begin{tabular}{c|c|c|c}
+    $n$ & $C(x)$ & count & OEIS seq. \\
+    \hline
+    4 & $\frac{x+x^2-3x^3-2x^4}{x^2+x+1}$ & 1 & Not present \\ 
+    5 & $\frac{x+x^2-4x^3-3x^4-x^5}{x^2+x+1}$ & 1 & Not present\\
+\end{tabular}
+\end{center}
+We see if the parameterize $C(x)$ by $n$ we get the following equation.
+\[
+    C_n(x) = \frac{x+x^2-(n-1)x^3-(n-2)x^4-(n-4)x^5}{x^2+x+1}
+\]
+\[
+    = (x+x^2-(n-1)x^3-(n-2)x^4-(n-4)x^5)\sum_{m \geq 0}(-x^2-x)^m.
+\]
+
+
 \subsection{Programming}
 There were three small programs written for the project: mp for generating the
 systems from the equivalence relations, mp2 for taking the domain of these
@@ -318,6 +378,14 @@ of the sequences manually. mp and tester were written in Haskell and mp2 in Sage
 \section{Problems, questions, remarks}
 Are there larger systems, for example from $\Sym_4$, where we cannot apply the
 methods used in this paper?
+
+Would similar formulas to the $C_n$ appear again when we would
+look at $\Sym_4$? Can we justify why we get these patterns?
+
+Can we describe clearly $C_n$ from how patterns in the base system cluster together?
+Why do the rules used to make the system confluent not seem to matter?
+
+(look at linton)
 
 \bibliographystyle{plain}
 \bibliography{mp}
