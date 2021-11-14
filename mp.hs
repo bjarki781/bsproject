@@ -37,7 +37,7 @@ show_prm prm = if maximum prm < 10
                 else intercalate "," $ map show prm
 
 show_rule :: Rule -> String
-show_rule (t, r) = show_prm t ++ " \\rightarrow " ++ show_prm r 
+show_rule (t, r) = show_prm t ++ " \\mapsto " ++ show_prm r 
 
 show_sys :: System -> String
 show_sys = unlines . map show_rule

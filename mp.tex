@@ -101,15 +101,15 @@ pattern-rewriting systems.
 
 \subsection{Pattern-rewriting systems}
 A pattern-rewriting system is a subset $R \subset \cup_n \Sym_n \times \Sym_n$.
-We use the notation $(\alpha \to \beta)$ for $(\alpha, \beta)$ for elements of
+We use the notation $\alpha \mapsto \beta$ interchangeably $(\alpha, \beta)$ for elements of
 $R$.
 We can make this subset induce a \emph{rewrite relation} on $\Sym$ in the following way: We say
-$p \to_R q$ for $p, q \in \Sym_k$ if there exists $(\alpha \to \beta) \in R$ so
+$p \to_R q$ for $p, q \in \Sym_k$ if there exists $\alpha \mapsto \beta \in R$ so
 we can write $p = u \alpha v$ and $q = u \beta v$, where
 $u$ and $v$ are some permutations.  Note that the relation is
-length-preserving.  For example, if $R = {(123 \to 321)}$, then $1234$ relates to
-$3214$. The domain of $R$ we denote by $\dom(R) = \{\alpha : (\alpha \to \beta) \in
-R\}$. The image of $R$ we in turn denote $\img(R) = \{\beta : (\alpha \to \beta) \in
+length-preserving.  For example, if $R = {123 \mapsto 321}$, then $1234 \to_R 3214$. 
+We denote the domain of $R$ by $\dom(R) = \{\alpha : \alpha \mapsto \beta \in
+R\}$. The image of $R$ we in turn denote $\img(R) = \{\beta : \alpha \mapsto \beta \in
 R\}$. We denote the reflexive transitive closure of $R$ as $\tostar_R$, that is,
 any number of applications of $R$. We denote the equivalence closure as
 $\equiv_R$. We can skip the subscript if the system that's being discussed is
@@ -186,19 +186,19 @@ create a system that correponds to a respective family of equivalences.
 
 \begin{example}
     The equivalence $123 \equiv 321$ allows two single-image systems, namely
-    $\{(123 \to 321)\}$ or $\{(321 \to 123)\}$. The same goes for $132 \equiv 312$,
-    $\{(132 \to 312)\}$ or $\{(312 \to 132)\}$.
+    $\{123 \mapsto 321\}$ or $\{321 \mapsto 123\}$. The same goes for $132 \equiv 312$,
+    $\{132 \mapsto 312\}$ or $\{312 \mapsto 132\}$.
 
     Then the equivalence family $\{123 \equiv 321, 132 \equiv 312\}$ can then generate
-    four possible systems: $\{(123 \to 321), (132 \to 312)\}$, $\{(123 \to 321),
-    (312 \to 132)\}$, etc.
+    four possible systems: $\{123 \mapsto 321, 132 \mapsto 312\}$, $\{123 \mapsto 321,
+    312 \mapsto 132\}$, etc.
 \end{example}
 
 Let us introduce a method for determining a terminating system given an
 equivalence of patterns.
 
 \begin{lemma}
-    Let $E$ be a single-image system. If $\pi \to \rho$ is in $E$ and 
+    Let $E$ be a single-image system. If $\pi \mapsto \rho$ is in $E$ and 
     \[
         \sum\nolimits_\rho(u\pi v) < \sum\nolimits_\rho(u \rho v) \tag{$\ast$}
         \label{increasingimage}
@@ -227,7 +227,7 @@ the length of a subpermutation.
         \pi_i[-l_i:0] = \rho[-l_i:0] \quad \textnormal{where} \quad l_i :=
         \len(\shr(\pi_i, \rho)) \tag{$\ast\ast$} \label{joininvariance}
     \]
-    for each $\pi_i \to \rho \in E$ then $E$ fulfills condition
+    for each $\pi_i \mapsto \rho \in E$ then $E$ fulfills condition
     \eqref{increasingimage}. \end{lemma}
 \begin{proof}
     Let us assume that we have a rule in $E$, namely $\pi \to \rho$ and so
@@ -248,11 +248,16 @@ an increasing statistic. Hence $E$ is terminating.
 Let us turn to families of equivalences which can generate systems with more
 than one image.
 
+An obvious lemma.
 \begin{lemma}
-    A number of single image systems catenated together induce an equivalence
-    relation that is the same as define by a family of equivalences
+    A family of single-image systems catenated together induce an equivalence
+    relation that is the same as defined by the family of equivalences
     corresponding to each system.
 \end{lemma}
+\begin{proof}
+    Each $x$ in $\Sym$ has a normal form by LEMMA and we are still counting
+    them, just as with single-image systems.
+\end{proof}
 
 \begin{definition}
     A sigma statistic parameterized by a set of patterns is defined as
@@ -322,7 +327,8 @@ The joint distribution is always on the form $\sum_{m \geq 0}m!C(x)^m$ where $C$
 is the cluster generating function corresponding to the system.
 
 A formula appears for the cluster generating function, $C_n(x) = x-nx^3$, $n$ being the number of rules
-in the terminating system generated from the equivalence family.
+in the terminating system generated from the equivalence family. $n$ is the
+number of rules in the system that are in $\Sym_3 \times \Sym_3$.
 \begin{center}
 \begin{tabular}{c|c|c|c}
     $n$ & $C(x)$ & count & OEIS seq. \\
@@ -335,6 +341,12 @@ in the terminating system generated from the equivalence family.
 \end{tabular}
 \end{center}
 This formula constitutes 175 of the 203 equivalence relations.
+What seems to be in common witht these equivalences is that there is a
+terminatnig system correpsonding to it which does not have any clusters in its
+domain. 
+
+ARE THERE OTHER POSSIBLE SYSTEMS, WHICH HAVE CLUSTERS IN DOM AND ARE TERMINATING AND
+CONFLUENT 
 
 \begin{center}
 \begin{tabular}{c|c|c|c}
@@ -362,10 +374,6 @@ We see if the parameterize $C(x)$ by $n$ we get the following equation.
 \[
     C_n(x) = \frac{x+x^2-(n-1)x^3-(n-2)x^4-(n-4)x^5}{x^2+x+1}
 \]
-\[
-    = (x+x^2-(n-1)x^3-(n-2)x^4-(n-4)x^5)\sum_{m \geq 0}(-x^2-x)^m.
-\]
-
 
 \subsection{Programming}
 There were three small programs written for the project: mp for generating the
