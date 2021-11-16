@@ -44,9 +44,7 @@ def C(T, clusters):
     A = wam(T, clusters)
     I = identity_matrix(A.nrows())
     f = sum([(-1)^i * det(mremoved(I - A, i+1, 1)) for i in range(1, len(T)+1)])
-    C = (1/det(I - A)) * f
-    F = x + C
-    return F
+    return (1/det(I - A)) * f
 
 def sequence(expression, n):
     F = sum([factorial(m)*expression^m for m in range(n+1)])
@@ -82,13 +80,19 @@ def generate_latex(seq_dict):
         print('$$')
         print('\\begin{matrix}')
         exprs = []
-        for _, _, _, _, expr, _ in seq_dict[e]:
-            exprs.append(expr)
+        for _, _, _, _, expr, _, raw_expr in seq_dict[e]:
+            exprs.append((expr, raw_expr))
 
-        for express in nub(exprs):
+        for exprr, raw_exprr in nub(exprs):
             print('\\sum_{m \geq 0} m! \\left(')
-            print(latex(express))
+            print(latex(exprr))
             print('\\right)^m')
+
+            print('\\quad')
+
+            print(latex(raw_exprr))
+
+        print('\\ ')
 
         seq, name = e
         print(latex(seq))
@@ -99,7 +103,7 @@ def generate_latex(seq_dict):
         print('$$')
         print('\\begin{align}')
         for i, d in enumerate(seq_dict[e]):
-            equivs, R, domain, clusters, expr, match = d
+            equivs, R, domain, clusters, expr, match, _ = d
             if match:
                 print('\\text{RRR}')
             else:
@@ -134,7 +138,9 @@ master = {}
 for line in sys.stdin:
     t = eval(line)
     equivs, system, domain, clusters = t
-    expr = C(domain, clusters)
+    raw_expr = C(domain, clusters)
+    expr = x + raw_expr
+
     s = sequence(expr, 8)
     match = False
     try:
@@ -143,7 +149,7 @@ for line in sys.stdin:
     except KeyError:
         pass
         
-    u = (equivs, system, domain, clusters, expr, match)
+    u = (equivs, system, domain, clusters, expr, match, raw_expr)
     if s not in master:
         master[s] = [u]
     else:
