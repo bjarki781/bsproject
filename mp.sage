@@ -89,8 +89,8 @@ def generate_latex(seq_dict):
             print('\\right)^m')
 
             print('\\quad')
-
-            print(latex(raw_exprr))
+            q, r = raw_exprr.numerator().quo_rem(raw_exprr.denominator())
+            print(latex((q, r/raw_exprr.denominator())))
 
         print('\\ ')
 
