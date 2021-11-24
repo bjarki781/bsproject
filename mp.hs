@@ -21,29 +21,11 @@ dom system = [target | (target, _) <- system]
 img :: System -> [Perm]
 img system = [result | (_, result) <- system]
 
--- these two functions are just for testing
--- they work for permutations up to length 9
 prm :: Int -> Perm
 prm = map digitToInt . show
 
 rule :: Int -> Int -> (Perm, Perm)
 rule r s = (prm r, prm s)
-
--- best case, we make Perm, Rule, etc. a newtype with show instances
--- but this will do for now
-show_prm :: Perm -> String
-show_prm prm = if maximum prm < 10 
-                then prm >>= show 
-                else intercalate "," $ map show prm
-
-show_rule :: Rule -> String
-show_rule (t, r) = show_prm t ++ " \\mapsto " ++ show_prm r 
-
-show_sys :: System -> String
-show_sys = unlines . map show_rule
-
-show_eq :: Equivalence -> String
-show_eq = show 
 
 -- The symmetric group; i.e. permutations of {1,..,n}
 sym :: Int -> [Perm]
@@ -282,12 +264,7 @@ test2 =
 
 main = do
     let ok2 = map (\(e, d) -> (e, fromJust d)) $ ([],Just []): test ++ test2
+    let findSystemClustersDict sys = [((p, q), c) | p <- dom sys, q <- dom sys, c <- findClusters p q, not $ null c]
 
-    mapM_ putStrLn 
-        $ map (\(e, d) -> 
-            "(" ++ (show e) 
-                ++ ", " ++ (show $ map show_rule d) 
-                ++ "," ++ (show $ dom d) 
-                ++ ", " ++ (show [((p, q), c) | p <- dom d, q <- dom d, c <- findClusters p q, not $ null c]) 
-                ++ ")") $ ok2
+    mapM_ (\(e, d) -> print (e, d, dom d, findSystemClustersDict d)) ok2
 

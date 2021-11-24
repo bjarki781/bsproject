@@ -59,6 +59,10 @@ def sequence(expression, n):
 def show_permutation(prm):
     return ''.join([str(d) for d in prm])
 
+def show_rule(rule):
+    target, result = rule
+    return show_permutation(target) + ' \\mapsto ' + show_permutation(result)
+
 def show_equivalence(eq):
     return '\{' + ', '.join([show_permutation(prm) for prm in eq]) + '\}'
 
@@ -97,6 +101,9 @@ def generate_latex(seq_dict):
         print('\\begin{align}')
         for i, d in enumerate(seq_dict[e]):
             equivs, R, domain, clusters, expr, match, _ = d
+            if equivs == []:
+                print('\\textnormal{the identity equivalence}')
+                continue
             #if match:
             #    print('\\text{RRR}')
             #else:
@@ -109,10 +116,7 @@ def generate_latex(seq_dict):
 
             print('&')
             print('\\begin{matrix}')
-            for j in range(0, len(R)):
-                print(R[j])
-                if j != len(R) - 1:
-                    print('\\\\')
+            print('\\\\'.join([show_rule(r) for r in R]))
             print('\\end{matrix}')
 
             if i != len(seq_dict[e]) - 1:
