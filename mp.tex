@@ -17,6 +17,10 @@
 \usepackage{todonotes}
 \usepackage[hidelinks]{hyperref}
 \usepackage{bm}
+\usepackage{appendix}
+\usepackage{multicol}
+\usepackage[useregional]{datetime2}
+
 \RequirePackage{graphicx}
 \RequirePackage{hyperref}
 \newcommand{\parm}{\mathord{\color{black!33}\bullet}}
@@ -24,8 +28,6 @@
 \newcommand{\breath}{\vspace{6pt plus 2pt minus 1pt}\noindent}
 
 \newcommand{\patternrule}{ \mapsto \!}
-
-\usepackage[useregional]{datetime2}
 
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{proposition}[theorem]{Proposition}
@@ -564,5 +566,15 @@ I would like to thank Anders for being such a good sport.
 
 \bibliographystyle{plain}
 \bibliography{mp}
+
+\begin{appendices}
+\section{Terminating and confluent systems}
+
+\newgeometry{left=2cm,right=2cm,top=2cm,bottom=2cm}
+\begin{multicols}{2}
+\include{appendix}
+\end{multicols}
+
+\end{appendices}
 
 \end{document}

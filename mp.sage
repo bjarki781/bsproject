@@ -60,7 +60,7 @@ def show_permutation(prm):
     return ''.join([str(d) for d in prm])
 
 def show_equivalence(eq):
-    return '\\equiv'.join([show_permutation(prm) for prm in eq])
+    return '\{' + ', '.join([show_permutation(prm) for prm in eq]) + '\}'
 
 def nub(seq):
     seen = set()
@@ -68,13 +68,8 @@ def nub(seq):
     return [x for x in seq if not (x in seen or seen_add(x))]
 
 def generate_latex(seq_dict):
-    print('\\documentclass{article}')
-    print('\\usepackage{amsmath}')
-    print('\\usepackage{geometry}')
-    print('\\usepackage{stackengine}')
-    print('\\geometry{total={170mm,257mm}, left=20mm, top=20mm}')
     print('\\allowdisplaybreaks')
-    print('\\begin{document}')
+    print('\\begin{scriptsize}')
     
     for e in seq_dict:
         print('$$')
@@ -88,32 +83,30 @@ def generate_latex(seq_dict):
             print(latex(exprr))
             print('\\right)^m')
 
-            print('\\quad')
+            print('\\ ')
             q, r = raw_exprr.numerator().quo_rem(raw_exprr.denominator())
             print(latex((q, r/raw_exprr.denominator())))
 
-        print('\\ ')
+        print('\\\\')
 
         seq, name = e
         print(latex(seq))
-        print('\\texttt{')
-        print(name)
-        print('}')
+        print('\\texttt{' + name + '}')
         print('\\end{matrix}')
         print('$$')
         print('\\begin{align}')
         for i, d in enumerate(seq_dict[e]):
             equivs, R, domain, clusters, expr, match, _ = d
-            if match:
-                print('\\text{RRR}')
-            else:
-                print('\\text{VVV}')
+            #if match:
+            #    print('\\text{RRR}')
+            #else:
+            #    print('\\text{VVV}')
 
-            print('\\quad')
+            #print('\\quad')
 
-            for j in range(0, len(equivs)):
-                print(show_equivalence(equivs[j]))
-                print('\\quad')
+            print('\{' + ', '.join([show_equivalence(e) for e in equivs]) + '\}')
+            print('\\ ')
+
             print('&')
             print('\\begin{matrix}')
             for j in range(0, len(R)):
@@ -126,8 +119,7 @@ def generate_latex(seq_dict):
                 print('\\\\')
 
         print('\\end{align}')
-
-    print('\\end{document}')
+    print('\\end{scriptsize}')
 
 verify_data = {}
 for line in open('verify_data', 'r'):
