@@ -1,4 +1,4 @@
-\documentclass[a4paper, 11pt, english]{article}
+\documentclass[openany, a4paper, 11pt, english]{article}
 \usepackage[top=3.17cm, bottom=3.27cm, left=3.5cm, right=3.5cm]{geometry}
 %\setlength{\parindent}{2.5em}
 \setlength{\parskip}{6pt plus 2pt minus 1pt}
@@ -169,12 +169,9 @@ To enumerate these different equivalence classes this we will introduce
 pattern-rewriting systems.
 
 \subsection{Pattern-rewriting systems}
-A pattern-rewriting system is a subset $R \subset \cup_{n \geq 0} \Sym_n \times \Sym_n$.
+A pattern-rewriting system is a subset $R \subset \cup_{n} \Sym_n \times \Sym_n$.
 We use the notation $\alpha \patternrule \beta$ for $(\alpha, \beta)$ when referring
 to elements of a pattern-rewriting system $R$. 
-
-A pattern-rewriting system is different from an abstract string rewriting system
-in !!!
 
 Juxtaposition of permutations signifies concatenation, so if $\pi=123$ and
 $\tau=321$ then $\pi\tau=123654$.
@@ -229,11 +226,11 @@ either direction.
     \patternrule 123\}$. The same goes for $\{ \{ 132, 312 \} \}$, $\{132 \patternrule
     312\}$ or $\{312 \patternrule 132\}$.
 
-    Thus the equivalence family $\{ \{ 123, 321 \}, \{ 132, 312 \} \}$ 
-    The closure of the relation induced by each of these four systems $\{123 \patternrule 321, 132 \patternrule 312\}$, $\{123 \patternrule 321,
-    312 \patternrule 132\}$, $\{321 \patternrule 123, 132 \patternrule 312\}$,
-    $\{321 \patternrule 123, 312 \patternrule 132\}$ is equal to the equivalence
-    relation induced by $\{ \{ 123, 321 \} \}$.
+    The equivalence closure of the rewrite relation induced by each of these
+    four rewrite systems: $\{123 \patternrule 321, 132 \patternrule 312\}$, $\{123
+    \patternrule 321, 312 \patternrule 132\}$, $\{321 \patternrule 123, 132
+    \patternrule 312\}$, $\{321 \patternrule 123, 312 \patternrule 132\}$ is
+    equal to the equivalence relation induced by $\{ \{ 123, 321 \} \}$.
 \end{example}
 
 So the problem is reduced to generating a terminating and confluent system $R$
@@ -317,7 +314,8 @@ equivalence of patterns.
  We also let $\shr(\alpha,
 \beta)$ signify the part where, if $\alpha$ and $\beta$ form a cluster, they
 share. $\shr(132, 213) = 32$. We assume that they just have one cluster, since
-we're not clustering the same pattern, 123 and 123, for example. 
+we're not clustering the same pattern, 123 and 123, for example. We also index
+permutations with $()_i$.
 
 \begin{lemma}
     Let $E$ be a single-image system with $\{\rho\} = \img(E)$. If
@@ -464,65 +462,67 @@ is the cluster generating function corresponding to the system.
     1 & $-x^3$ & 15 & A212580 \\
     2 & $-2x^3$ & 63 & A212432 \\
     2 & $\frac{-x^3-x^4}{x^2+x+1}$ & 2 & A212581 \\
-    3 & $-3x^3$ & 78 & Not present \\
+    3 & $-3x^3$ & 78 & \emph{Not present} \\
     3 & $\frac{-2x^3-2x^4-x^5}{x^2+x+1}$ & 12 & A212433 \\
-    4 & $-4x^3$ & 18 & Not present \\
-    4 & $\frac{-3x^3-3x^4-2x^5}{x^2+x+1}$ & 12 & Not present\\
-    4 & $\frac{-4x^3-2x^4}{x^2+x+1}$ & 1 & Not present \\ 
-    5 & $\frac{-5x^3-3x^4-x^5}{x^2+x+1}$ & 1 & Not present\\
+    4 & $-4x^3$ & 18 & \emph{Not present} \\
+    4 & $\frac{-3x^3-3x^4-2x^5}{x^2+x+1}$ & 12 & \emph{Not present}\\
+    4 & $\frac{-4x^3-2x^4}{x^2+x+1}$ & 1 & \emph{Not present} \\ 
+    5 & $\frac{-5x^3-3x^4-x^5}{x^2+x+1}$ & 1 & \emph{Not present}\\
 \end{tabular}
 \end{center}
 
-If we stare for long enough then we see patterns emerge.
+If we parameterize each $C_J$ with it's corresponding $J$ value then we have
+three different types of cluster generating functions.
 
-A formula appears for the cluster generating function, $C_1(n,x) = -nx^3$, $n$ being the number of rules
-in the terminating system generated from the equivalence family. $n$ is the
-number of rules in the system that are in $\Sym_3 \times \Sym_3$.
+The most visible should be $C'_J(x) = -|J|x^3$.
 \begin{center}
 \begin{tabular}{c|c|c|c}
-    $|J|$ & $C_1(x)$ & count & OEIS seq. \\
+    $|J|$ & $C'(x)$ & count & OEIS seq. \\
     \hline
     0 & $0$ & 1 & A000142 \\
     1 & $-x^3$ & 15 & A212580 \\
     2 & $-2x^3$ & 63 & A212432 \\
-    3 & $-3x^3$ & 78 & Not present \\
-    4 & $-4x^3$ & 18 & Not present \\
+    3 & $-3x^3$ & 78 & \emph{Not present} \\
+    4 & $-4x^3$ & 18 & \emph{Not present} \\
 \end{tabular}
 \end{center}
-This formula constitutes 175 of the 203 equivalence relations.
-What seems to be in common with these equivalences is that there is a
-terminating system corresponding to it which does not have any clusters in its
-domain. 
+This formula accounts for 175 of the 203 equivalence relations.
+What seems to be in common with these equivalences is that the domains of the
+single image systems are not clustering with each other. (?)
 
+Next we see $C''_J(x)$:
+\[
+    C''_J(x) = \frac{-|J|x^3-(|J|-1)x^4-(|J|-2)x^5}{x^2+x+1}
+\]
+
+The actual instances of $C''_J$:
 \begin{center}
 \begin{tabular}{c|c|c|c}
-    $|J|$ & $C_2(x)$ & count & OEIS seq. \\
+    $|J|$ & $C''(x)$ & count & OEIS seq. \\
     \hline
     2 & $\frac{-x^3-x^4}{x^2+x+1}$ & 2 & A212581 \\
     3 & $\frac{-2x^3-2x^4-x^5}{x^2+x+1}$ & 12 & A212433 \\
-    4 & $\frac{-3x^3-3x^4-2x^5}{x^2+x+1}$ & 12 & Not present\\
+    4 & $\frac{-3x^3-3x^4-2x^5}{x^2+x+1}$ & 12 & \emph{Not present}\\
 \end{tabular}
 \end{center}
-We see if the parameterize $C_2(x)$ by $n$ we get the following equation.
-\[
-    C_2(n,x) = \frac{-nx^3-(n-1)x^4-(n-2)x^5}{x^2+x+1}
-\]
 
-\begin{center}
-\begin{tabular}{c|c|c|c}
-    $|J|$ & $C_3(x)$ & count & OEIS seq. \\
-    \hline
-    4 & $\frac{-4x^3-2x^4}{x^2+x+1}$ & 1 & Not present \\ 
-    5 & $\frac{-5x^3-3x^4-x^5}{x^2+x+1}$ & 1 & Not present\\
-\end{tabular}
-\end{center}
-We see if the parameterize $C_3(x)$ by $n$ we get the following equation.
+
+Finally we have $C'''_J(x)$ which accounts for only 2 equivalence relations.
 \[
     C_3(n,x) = \frac{-nx^3-(n-2)x^4-(n-4)x^5}{x^2+x+1}
 \]
+with it's instances being
+\begin{center}
+\begin{tabular}{c|c|c|c}
+    $|J|$ & $C'''(x)$ & count & OEIS seq. \\
+    \hline
+    4 & $\frac{-4x^3-2x^4}{x^2+x+1}$ & 1 & \emph{Not present} \\ 
+    5 & $\frac{-5x^3-3x^4-x^5}{x^2+x+1}$ & 1 & \emph{Not present}\\
+\end{tabular}
+\end{center}
 
 So we see that the partitions of $\Sym_3$ are split into three different types
-of Wilf-classes, which we describe by $C_1$, $C_2$ and $C_3$ and the size
+of Wilf-classes, which we can describe by $C'$, $C''$ and $C'''$ and the size
 of the partition.
 
 \subsection{Programming}
@@ -550,6 +550,9 @@ of equivalences which of $C_1$, $C_2$ and $C_3$ will enumerate the equivalence
 classes induced by those family of equivalences?
 Can this way be generalized to partitions of $\Sym_n$, for any $n$?
 
+Why can we not use our algorithms for systems .. and .. ? And why do they work
+for the symmetries? Does there exist an algorithm that makes all systems confluent?
+
 The limitations of Claesson's method lay mainly in the fact that the domain of a
 system must be fully reduced for the calculations to work. For instance, we can not use his
 method for $\{ \{ 12, 21 \}, \{ 123, 321, 312, 213 \} \}$.
@@ -557,8 +560,8 @@ method for $\{ \{ 12, 21 \}, \{ 123, 321, 312, 213 \} \}$.
 (look at Linton)
 
 \begin{conjecture}
-    If a partition $J$ on $\Sym_n$ has a system that has no non-self-clusters then it's cluster generating
-    function is $x^n-|J|x$.
+    If a partition $J$ on $\Sym_n$ has a system that has no non-self-clusters in
+    its domain then its cluster generating function is $x^n-|J|x$.
 \end{conjecture}
 
 \section*{Acknowledgments}
@@ -567,14 +570,14 @@ I would like to thank Anders for being such a good sport.
 \bibliographystyle{plain}
 \bibliography{mp}
 
+\newgeometry{left=2cm,right=2cm,top=2cm,bottom=2cm}
 \begin{appendices}
 \section{Terminating and confluent systems}
-
-\newgeometry{left=2cm,right=2cm,top=2cm,bottom=2cm}
+We categorize the equivalence families/equivalence relations by what their joint
+distribition is.
 \begin{multicols}{2}
 \include{appendix}
 \end{multicols}
-
 \end{appendices}
 
 \end{document}

@@ -268,21 +268,27 @@ make_cfl_system_alt systems = listToMaybe $ length_sort confluent_systems
 
 alls = tail $ map (filter (\p -> length p > 1)) $ partitions $ sym 3
 
+-- 197
 test = 
   filter (isJust . snd)
   $ map (\(a, b) -> (a, listToMaybe $ catMaybes b))
-  $ map (\(a, b) -> (a, map make_system b))
-  $ map (\x -> (x, get_all_turns x)) alls
+  $ map (\(a, b) -> (a, map make_system_alt b))
+  $ map (\x -> (x, [x])) alls
 
+-- 3
 test2 = 
   filter (isJust . snd)
   $ map (\(a, b) -> (a, listToMaybe $ catMaybes b))
-  $ map (\(a, b) -> (a, map make_system_alt b))
-  $ map (\x -> (x, get_all_turns x)) (alls \\ (map fst test))
+  $ map (\(a, b) -> (a, map make_system b))
+  $ map (\x -> (x, [x])) (alls \\ (map fst test))
+
+-- 2 by hand using symmetries
+-- 1 by triviality
 
 main = do
     let ok2 = map (\(e, d) -> (e, fromJust d)) $ ([],Just []): test ++ test2
 
+    -- clean eventually!!!
     mapM_ putStrLn 
         $ map (\(e, d) -> 
             "(" ++ (show e) 
