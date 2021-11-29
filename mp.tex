@@ -138,13 +138,9 @@ a family of equivalences:
 This is actually a shorthand for
 \[
     \{ \{ \alpha, \beta \}, \{ \alpha, \gamma \}, \dots, \{ \lambda, \mu \}, \{
-        \lambda, \nu \}, \dots \}.
+        \lambda, \nu \}, \dots \}
 \]
-Which is again a shorthand for
-\[
-    \{ (\alpha, \beta), (\beta, \alpha), (\alpha, \gamma), (\gamma, \alpha),
-    \dots, (\lambda, \mu), (\mu, \lambda), (\lambda, \nu), (\nu, \lambda), \dots \}
-\]
+which we call the canonical form.
 
 A family of equivalences $J$ will induce an equivalence relation which we call $\sim_J$. We
 say $u \pi v \sim_J u \rho v$ if $\{ \pi, \tau \} \in J$.
@@ -158,12 +154,14 @@ be equivalent by relation $\sim_J$. That will, for example, result in
 An equivalence relation on $\Sym = \cup_{n \geq 1} \Sym_n$ splits each $\Sym_n$
 into a set of equivalence classes which we want to enumerate. 
 
-Linton has already made good headway (what exactly) the first two types but on
-spring of 2021 when Claesson published a preprint of his article that gives a
-semi-automatic way of enumerating equivalence classes of this type.
+Linton had already made some headway on enumerating equivalence classes the
+first two types but the spring of 2021 Claesson published a preprint of his
+article that gives a semi-automatic way of enumerating equivalence classes of
+the last type.
 
-In this article we will give an automatic method for enumerating the equivalence
-classes defined by partitions of $\Sym_3$ and some thoughts on the resulting generating functions.
+In this article we will attempt to give an automatic method for enumerating the
+equivalence classes defined by partitions of $\Sym_3$ and some thoughts on the
+resulting generating functions.
 
 To enumerate these different equivalence classes this we will introduce
 pattern-rewriting systems.
@@ -174,11 +172,12 @@ We use the notation $\alpha \patternrule \beta$ for $(\alpha, \beta)$ when refer
 to elements of a pattern-rewriting system $R$. 
 
 Juxtaposition of permutations signifies concatenation, so if $\pi=123$ and
-$\tau=321$ then $\pi\tau=123654$.
+$\tau=321$ then $\pi\tau=123654$ with the left argument being unchanged and the
+right pushed up.
 
-We use the variables $\alpha$, $\beta$ and $\gamma$ for whole permutations.
-We use the variables $\pi$, $\rho$, $\tau$ and $\sigma$ for patterns.
-We use the variables $\upsilon$ and $\nu$ for slices of permutations.
+We use the variables $\alpha$ and $\beta$ for whole permutations, 
+the variables $\pi$, $\rho$, $\tau$ and $\sigma$ for patterns.
+Finally we use the variables $u$ and $v$ for slices of permutations.
 
 We can make this subset induce a \emph{rewrite relation} on $\Sym$ in the following way: We say
 $p \to_R q$ for $p, q \in \Sym_k$ if there exists $\alpha \patternrule \beta \in R$ so
@@ -189,9 +188,7 @@ length-preserving. For example, if $R = \{123 \patternrule 321\}$, then $1234 \t
 \breath We denote the domain of $R$ by $\dom(R) = \{\alpha : \alpha \patternrule
 \beta \in R\}$. The image of $R$ we in turn write $\img(R) = \{\beta : \alpha
 \patternrule \beta \in R\}$. We write the reflexive transitive closure of
-$\to_R$ as $\tostar_R$.  We denote the equivalence closure as $\equiv_R$. We can
-skip the subscript $\parm_R$ if context makes it clear what system is being
-referred to.
+$\to_R$ as $\tostar_R$. 
 
 An element $x$ in $\Sym$ is said to be in normal form under the relation $\to_R$
 if there is no $y \in \Sym$ so that $x \to_R y$. A relation $\to_R$ is said to be
@@ -217,6 +214,8 @@ only one normal form.
 \end{corollary}
 
 We can derive rewrite relations from a given equivalence relation $\sim_J$.
+The only condition we set on those derived rewrite relations is that their
+equivalence closure must be equal to the given equivalence relation.
 A set of equivalent pairs of patterns $J$ is equal to the set of rewrites to
 either direction. 
 \begin{example}
@@ -240,7 +239,7 @@ classes.  Section 2 of Claesson's paper provides us with a way to do that.
 \cite{claesson:2021}
 
 Our method boils down to finding systems which terminate, and we then try to
-make them confluent.  These terminating systems are composed of single-image
+make them confluent. These terminating systems are composed of single-image
 systems that each are created from a respective equivalence relation.
 
 \subsection{Increasing statistics}
@@ -279,13 +278,15 @@ Let's take one example from Claesson's paper.
         \sum_{n \geq 1} \Sym_n(21, 231) = \sum_{m \geq 0} m!(x-x^2)^m
     \]
     which is the joint distribution of the equivalence classes defined by 
-    $\{ \{ 12, 21 \} \}$.
+    $\{ \{ 12, 21 \} \}$, as found by Stanley CITE.
 \end{example}
 
 \section{Finding systems automatically}
 Claesson only found systems corresponding to equivalence relations induced by a
 single set of equivalent patterns. We will introduce a method for finding
 systems for equivalence relations induced by any number of sets.
+
+\subsection{Single-image systems}
 
 Let's begin focusing on \emph{single-image systems}. That is, systems, which
 have only a single pattern as their image. Claesson looked at these kinds
@@ -314,13 +315,13 @@ equivalence of patterns.
  We also let $\shr(\alpha,
 \beta)$ signify the part where, if $\alpha$ and $\beta$ form a cluster, they
 share. $\shr(132, 213) = 32$. We assume that they just have one cluster, since
-we're not clustering the same pattern, 123 and 123, for example. We also index
-permutations with $()_i$.
+we're not clustering the same pattern, 123 and 123, for example. We index a
+permutation $\alpha$ with $(\alpha)_i$, $1 \leq i \leq |\alpha|$.
 
 \begin{lemma}
-    Let $E$ be a single-image system with $\{\rho\} = \img(E)$. If
+    Let $E$ be a single-image system with $\{\rho\} = \img(E)$ and $n = |\rho|$. If
     \[
-        {\pi_i}_j = \rho_j \quad \textnormal{where} \quad n-\len(\shr(\pi_i,
+        (\pi_i)_j = (\rho)_j \quad \textnormal{where} \quad n-\len(\shr(\pi_i,
         \rho)) \leq j \leq n \tag{$\ast\ast$} \label{joininvariance}
     \]
     for each $\pi_i \patternrule \rho \in E$ then $E$ fulfills condition
@@ -344,7 +345,7 @@ an increasing statistic. Hence $E$ is terminating.
 Let us turn to families of equivalences which can generate systems with more
 than one image.
 
-An obvious lemma.
+\subsection{Multi-image systems}
 \begin{lemma}
     A family of single-image systems joined together induce an equivalence
     relation that is the same as defined by the family of equivalences
@@ -419,23 +420,25 @@ termination when making it confluent.
 By ensuring that all rules that are added have a positive sigma difference
 we can be certain that a system is still confluent. 
 
-\begin{definition}
-    Check if system is confluent. If not add one rule of the form $a
-    \patternrule b$ where $a$ is a pattern you get when you apply the system at
-    the leftmost place in the splitter permutation $s$ and $b$ is the rightmost
-    place where you can apply the system on $s$. Recurse.
-\end{definition}
+Algorithm 1:
+Add one rule of the form $a \patternrule b$ where $a$ and $b$ are normal forms
+of the splitter permutation $s$ and they give the largest sigma difference of
+all the rules. If the resulting system is confluent then return that system or
+if not, then add another rule. If there are no rules which have a postitive
+sigma difference then failure.
 
-\begin{definition}
-    Check if system is confluent. If not add one rule of the form $a
-    \patternrule b$ where $a$ and $b$ are normal forms of the splitter
-    permutation $s$ and they give the largest sigma difference of all the rules.
-\end{definition}
+Algorithm 2:
+add one rule of the form $a \patternrule b$ where $a$ is a pattern you get when
+you apply the system at the leftmost place in the splitter permutation $s$ and
+$b$ is the rightmost place where you can apply the system on $s$. If the
+resulting system is confluent then success but if the rule added is the same as
+the rule added before then failure.
 
-Both algorithms do not manage to make every terminating system confluent, they
-start adding the same rule over and over again for some systems.
+Both algorithms do not manage to make every terminating system confluent.
+Algorithm 1 manages 198 sytems, algoritm 2 manages 3 systems and symmetry
+manages 2 systems.
 
-But together they manage all 203 systems.
+Together they manage all 203 systems.
 
 \section{Application, result and verification}
 There are 10 different Wilf-classes for the equivalences of partitions of $S_3$.
@@ -557,15 +560,12 @@ The limitations of Claesson's method lay mainly in the fact that the domain of a
 system must be fully reduced for the calculations to work. For instance, we can not use his
 method for $\{ \{ 12, 21 \}, \{ 123, 321, 312, 213 \} \}$.
 
-(look at Linton)
-
 \begin{conjecture}
     If a partition $J$ on $\Sym_n$ has a system that has no non-self-clusters in
     its domain then its cluster generating function is $x^n-|J|x$.
 \end{conjecture}
 
 \section*{Acknowledgments}
-I would like to thank Anders for being such a good sport.
 
 \bibliographystyle{plain}
 \bibliography{mp}
