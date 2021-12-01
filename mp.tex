@@ -20,6 +20,8 @@
 \usepackage{appendix}
 \usepackage{multicol}
 \usepackage[useregional]{datetime2}
+\usepackage{listings}
+%\usepackage{courier}
 
 \RequirePackage{graphicx}
 \RequirePackage{hyperref}
@@ -209,8 +211,8 @@ only one normal form.
 \begin{corollary}
     If $R$ is a terminating and confluent pattern-rewriting system, then the set
     of $\dom(R)$-avoiding permutations in $S_n$ is a complete set of
-    representatives for $S_n / \equiv$, the set of equivalence classes of
-    $\equiv$.
+    representatives for $S_n / \sim_R$, the set of equivalence classes of
+    $\sim_R$.
 \end{corollary}
 
 We can derive rewrite relations from a given equivalence relation $\sim_J$.
@@ -230,7 +232,15 @@ either direction.
     \patternrule 321, 312 \patternrule 132\}$, $\{321 \patternrule 123, 132
     \patternrule 312\}$, $\{321 \patternrule 123, 312 \patternrule 132\}$ is
     equal to the equivalence relation induced by $\{ \{ 123, 321 \} \}$.
+
+    So for all of these $R$ we have that $\sim_J$ is the same as $\sim_R$.
 \end{example}
+
+An element of an canonical family equivalence relation $\{ \alpha, \beta \}$ is
+actually equal to the pair $(\alpha, \beta)$ and $(\beta, \alpha)$.
+Deriving an pattern-rewriting system from a family of equivalences is in
+practice choosing either element of the pair for each element of the canonical
+equivalence relation.
 
 So the problem is reduced to generating a terminating and confluent system $R$
 given a family of equivalences. We then enumerate $\dom(R)$-avoiding
@@ -420,23 +430,91 @@ termination when making it confluent.
 By ensuring that all rules that are added have a positive sigma difference
 we can be certain that a system is still confluent. 
 
-Algorithm 1:
-Add one rule of the form $a \patternrule b$ where $a$ and $b$ are normal forms
-of the splitter permutation $s$ and they give the largest sigma difference of
-all the rules. If the resulting system is confluent then return that system or
-if not, then add another rule. If there are no rules which have a postitive
-sigma difference then failure.
+The splitter permutation is the shortest cluster in $\Ocal(R)$.
 
-Algorithm 2:
-add one rule of the form $a \patternrule b$ where $a$ is a pattern you get when
-you apply the system at the leftmost place in the splitter permutation $s$ and
-$b$ is the rightmost place where you can apply the system on $s$. If the
-resulting system is confluent then success but if the rule added is the same as
-the rule added before then failure.
+A sigma difference of a rule $\alpha \patternrule \beta$ under an 
+statistic would be
+\[
+    \Delta(f, \alpha \patternrule \beta) = f(\beta) - f(\alpha)
+\]
+
+\begin{theorem}
+We use it to check if a statistic is increasing for a certain rule.
+If $\Delta(f, \alpha \patternrule \beta) > 0$ for all $\alpha \patternrule \beta
+\in R$ then $f$ is an increasing statistic under $R$.
+\end{theorem}
+
+\lstset{basicstyle=\footnotesize\ttfamily, frame=single, breaklines=true,
+mathescape=true}
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[title={Algorithm 1}]
+algo1(sys):
+    in: a terminating system sys
+        the increasing statistic that proves sys termination f
+    out: a terminating and confluent system
+
+    if sys is confluent then
+        return sys
+
+    s := choose shortest cluster in O(R)
+    rules := { a -> b | a, b are normal forms of s, $\Delta_f$(a -> b) > 0 }
+    rule := rule from rules chosen by maximum sigma difference of rule
+
+    if rules = $\emptyset$ then
+        return failure
+
+    return algo(sys + rule)
+\end{lstlisting}
+\end{minipage}
+
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[title={Algorithm 2}]
+algo2(sys):
+    in: a terminating system sys
+    out: a terminating and confluent system
+
+    if sys is confluent then
+        return sys
+
+    s := choose shortest cluster in O(R)
+    a := first application of R on s
+    b := last application of R on s
+
+    rule = a -> b
+    if last sys = rule then
+        return failure
+
+    return algo(sys + rule)
+\end{lstlisting}
+\end{minipage}
 
 Both algorithms do not manage to make every terminating system confluent.
-Algorithm 1 manages 198 sytems, algoritm 2 manages 3 systems and symmetry
-manages 2 systems.
+Algorithm 1 manages 198 sytems. What are left are the systems:
+
+\begin{gather*}
+    \{\{123,213\},\{132,312\},\{231,321\}\} \\
+    \{\{123,213\},\{132,231\},\{312,321\}\} \\
+    \{\{\{123,213,231,321\},\{132,312\}\}\} \\
+    \{\{123,132\},\{213,231\},\{312,321\}\} \\
+    \{\{123,132\},\{213,312\},\{231,321\}\} 
+\end{gather*}
+
+algoritm 2 manages 3 systems and we are left with
+\begin{gather*}
+    \{\{123,213\},\{132,312\},\{231,321\}\} \\
+    \{\{\{123,213,231,321\},\{132,312\}\}\}
+\end{gather*}
+
+For these two we can employ a little trick. By reversing each pattern in the
+family of equivalences we get the systems
+\begin{gather*}
+    \{\{312,321\},\{213,231\},\{123,132\}\} \\
+    \{\{123,132,312,321\},\{213,231\}\}
+\end{gather*}
+both of which have already computed systems. We can be sure that they have the
+same solution as their reverses, but only reversed. They have the same cluster
+generating function as their reverse.
 
 Together they manage all 203 systems.
 
@@ -445,7 +523,7 @@ There are 10 different Wilf-classes for the equivalences of partitions of $S_3$.
 
 \begin{definition}
     We can give a family of equivalences $J$ a size function which is the same
-    as the cardinality of the expanded set of equivalences.
+    as the cardinality of the canonical form of the set of equivalences.
 
     By this definition $| \{ \{ 123, 321 \}, \{ 312, 231, 213 \} \}| = | \{ \{
     123, 321 \}, \{ 312, 231 \}, \{ 312, 213 \} \} | = 3$, for example.
@@ -551,7 +629,7 @@ Can we derive a way to create a cluster generating function directly from a
 given family of equivalences? Can we create a test which tells us given a family
 of equivalences which of $C_1$, $C_2$ and $C_3$ will enumerate the equivalence
 classes induced by those family of equivalences?
-Can this way be generalized to partitions of $\Sym_n$, for any $n$?
+Can this way be generalized to partitions of $\Sym_n$, for every $n$?
 
 Why can we not use our algorithms for systems .. and .. ? And why do they work
 for the symmetries? Does there exist an algorithm that makes all systems confluent?
@@ -559,6 +637,9 @@ for the symmetries? Does there exist an algorithm that makes all systems conflue
 The limitations of Claesson's method lay mainly in the fact that the domain of a
 system must be fully reduced for the calculations to work. For instance, we can not use his
 method for $\{ \{ 12, 21 \}, \{ 123, 321, 312, 213 \} \}$.
+
+Is there a universial increasing statistic for say all systems defined the
+partitions of $\Sym_3$? Can we prove otherwise?
 
 \begin{conjecture}
     If a partition $J$ on $\Sym_n$ has a system that has no non-self-clusters in
