@@ -335,7 +335,8 @@ permutation $\alpha$ with $(\alpha)_i$, $1 \leq i \leq |\alpha|$.
         \rho)) \leq j \leq n \tag{$\ast\ast$} \label{joininvariance}
     \]
     for each $\pi_i \patternrule \rho \in E$ then $E$ fulfills condition
-    \eqref{increasingimage}. \end{lemma}
+    \eqref{increasingimage}. 
+\end{lemma}
 \begin{proof}
     Let us assume that we have a rule in $E$, namely $\pi \patternrule \rho$ and so
     $0 = \sum_\rho(\pi) < \sum_\rho(\rho) = 1$. Then $u \pi v \to u \rho v$. 
@@ -371,10 +372,29 @@ than one image.
     $$
         \sum\nolimits_\Pi = \sum_{\pi \in \Pi} \sum\nolimits_{\pi}.
     $$
-    We see this is an increasing statistic for a union of systems if
-    each system has an increasing $\sum_{\tau_i}$.  Each rule application will
-    increase one statistic, and then the whole sum of the statistics.
 \end{definition}
+
+\begin{lemma}
+    Let $R$ be a rewrite system. If $\pi \patternrule \rho$ is in $R$ and 
+    \[
+        \sum\nolimits_{\img(R)}(u\pi v) < \sum\nolimits_{\img(R)}(u \rho v) \tag{$\ast$}
+        \label{increasingimage}
+    \]
+    then $\sum$ parameterized by the image of $R$ is an increasing statistic
+    with respect to $R$.
+\end{lemma}
+If \eqref{increasingimage} applies to a system then we see that a set of it's
+images is increasing.
+
+\begin{lemma}
+    Let $R$ be a rewrite system with rules of length $n$. If
+    \[
+        \pi_j = \rho_j \quad \textnormal{where} \quad 
+        n-\max(\len(\shr(\pi, \img(R)))) \leq j \leq n \tag{$\ast\ast$} \label{joininvariance}
+    \]
+    for each $\pi \patternrule \rho \in R$ then $R$ fulfills condition
+    \eqref{increasingimage}. 
+\end{lemma}
 
 With this new definition we can work with equivalence relations that contain more than one
 equivalence.
@@ -387,43 +407,28 @@ equivalence.
     statistic with respect to $R$, namely $\sum_{\img(R)}$.  The rewrite
     relation $\to_R$ is hence terminating.
 \end{theorem}
+\begin{proof}
+    We want to show that
+    \[
+        \sum\nolimits_{\img(R)}(u\pi v) < \sum\nolimits_{\img(R)}(u \rho v) \tag{$\ast$}
+        \label{increasingimage}
+    \]
+    We have to make sure that clusters between images and domains of seperate
+    systems are all shallow.
+\end{proof}
 
 We then go through each partition of $\Sym_3$ and look at all the possible
 system a partition can generate. We then apply theorem to each of those systems
 and weed out those who don't fulfill the theorem's conditions. So for each
 partition we are left with a set of systems that are terminating.
 
-This theorem works well, 176 partitions of the 203 have a terminating system
-that can be found this way but for the rest we have to result to a little bit of
-manual work.
-
-\begin{example}
-    Take the equivalence $\{ \{ 213, 132 \} \}$. Its single-image systems,
-    ${\{ 213 \patternrule 132 \}}$ and ${\{ 132 \patternrule 213 \}}$
-    don't fulfill \eqref{joininvariance}.
-    When we apply some symmetries to it, we get $\{ \{ 312, 231 \} \}$ which has the same problem.
-
-    But for $\{ \{ 213, 132 \} \}$ sigma parameterized by a smaller statistic, namely $21$, is an
-    increasing statistic. So we say $132$ is a good image, there is exists an
-    increasing statistic with 132 as the system's image.
-    so $\{ 213 \patternrule 132 \}$ is a terminating system.
-\end{example}
-
-It turns out the rest, 27 out of 203 systems, all contain either $\{ \{ 213, 132
-\} \}$ or $\{ \{ 312, 231 \} \}$. When we explicitly give a good image for those
-systems then we get a terminating system for all 203 equivalence relations.
-
-With these observation we are able to find terminating systems for all set
-partitions on $\Sym_3$.
+Those systems are 154, of 203.
 
 \subsection{Making a terminating system confluent}
 First we can reduce the amount we check by the symmetries of the square.
 If we show that a system is both terminating and confluent, then all systems
 which we can arrive at through mirroring the permutations etc are also
 terminating and confluent.
-
-I have not found one algorithm that can make all systems confluent.
-I'm using two.
 
 With a system that is terminating, then it's possible to preserve its
 termination when making it confluent.
@@ -452,7 +457,7 @@ mathescape=true}
 algo1(sys):
     in: a terminating system sys
         the increasing statistic that proves sys termination f
-    out: a terminating and confluent system
+    out: a terminating and confluent system or failure
 
     if sys is confluent then
         return sys
@@ -468,55 +473,15 @@ algo1(sys):
 \end{lstlisting}
 \end{minipage}
 
-\begin{minipage}{\linewidth}
-\begin{lstlisting}[title={Algorithm 2}]
-algo2(sys):
-    in: a terminating system sys
-    out: a terminating and confluent system
+We shall prove that each algorithm doesn't ruin the termination of the system
+under the statistic $\img(R)$, original $R$. With image.
 
-    if sys is confluent then
-        return sys
-
-    s := choose shortest cluster in O(R)
-    a := first application of R on s
-    b := last application of R on s
-
-    rule = a -> b
-    if last sys = rule then
-        return failure
-
-    return algo(sys + rule)
-\end{lstlisting}
-\end{minipage}
-
-Both algorithms do not manage to make every terminating system confluent.
-Algorithm 1 manages 198 sytems. What are left are the systems:
-
-\begin{gather*}
-    \{\{123,213\},\{132,312\},\{231,321\}\} \\
-    \{\{123,213\},\{132,231\},\{312,321\}\} \\
-    \{\{\{123,213,231,321\},\{132,312\}\}\} \\
-    \{\{123,132\},\{213,231\},\{312,321\}\} \\
-    \{\{123,132\},\{213,312\},\{231,321\}\} 
-\end{gather*}
-
-algoritm 2 manages 3 systems and we are left with
-\begin{gather*}
-    \{\{123,213\},\{132,312\},\{231,321\}\} \\
-    \{\{\{123,213,231,321\},\{132,312\}\}\}
-\end{gather*}
-
-For these two we can employ a little trick. By reversing each pattern in the
-family of equivalences we get the systems
-\begin{gather*}
-    \{\{312,321\},\{213,231\},\{123,132\}\} \\
-    \{\{123,132,312,321\},\{213,231\}\}
-\end{gather*}
-both of which have already computed systems. We can be sure that they have the
-same solution as their reverses, but only reversed. They have the same cluster
-generating function as their reverse.
-
-Together they manage all 203 systems.
+\begin{proof}
+All rules are on the form
+domdom imgdom domimg. We want to show that a rule added with the algorithm does
+not ruin any img appearences it might cluster with and that rule also obeys
+\eqref{increasingimage}. For the original image.
+\end{proof}
 
 \section{Application, result and verification}
 There are 10 different Wilf-classes for the equivalences of partitions of $S_3$.
@@ -618,6 +583,25 @@ of the sequences manually. mp and tester were written in Haskell and mp in Sage 
 Are there larger systems, for example from $\Sym_4$, where we cannot apply the
 methods used in this paper? The methods here being the good-image algorithm and
 then the moving-pattern algorithm?
+
+\begin{example}
+    Take the equivalence $\{ \{ 213, 132 \} \}$. Its single-image systems,
+    ${\{ 213 \patternrule 132 \}}$ and ${\{ 132 \patternrule 213 \}}$
+    don't fulfill \eqref{joininvariance}.
+    When we apply some symmetries to it, we get $\{ \{ 312, 231 \} \}$ which has the same problem.
+
+    But for $\{ \{ 213, 132 \} \}$ sigma parameterized by a smaller statistic, namely $21$, is an
+    increasing statistic. So we say $132$ is a good image, there is exists an
+    increasing statistic with 132 as the system's image.
+    so $\{ 213 \patternrule 132 \}$ is a terminating system.
+\end{example}
+
+It turns out the rest, 27 out of 203 systems, all contain either $\{ \{ 213, 132
+\} \}$ or $\{ \{ 312, 231 \} \}$. When we explicitly give a good image for those
+systems then we get a terminating system for all 203 equivalence relations.
+
+With these observation we are able to find terminating systems for all set
+partitions on $\Sym_3$.
 
 Would similar formulas to the $C_n$ appear again when we would
 look at $\Sym_4$? Can we justify why we get these patterns?
