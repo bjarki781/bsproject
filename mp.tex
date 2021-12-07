@@ -21,7 +21,7 @@
 \usepackage{multicol}
 \usepackage[useregional]{datetime2}
 \usepackage{listings}
-%\usepackage{courier}
+\usepackage{tikz-cd}
 
 \RequirePackage{graphicx}
 \RequirePackage{hyperref}
@@ -144,13 +144,13 @@ This is actually a shorthand for
 \]
 which we call the canonical form.
 
-A family of equivalences $J$ will induce an equivalence relation which we call $\sim_J$. We
-say $u \pi v \sim_J u \rho v$ if $\{ \pi, \tau \} \in J$.
+A family of equivalences $J$ will induce an equivalence relation which we call $\equiv_J$. We
+say $u \pi v \equiv_J u \rho v$ if $\{ \pi, \tau \} \in J$.
 
 If we say $J = \{ \{ 132, 321 \} \}$ then we consider the patterns $132$ and $321$ to
-be equivalent by relation $\sim_J$. That will, for example, result in
+be equivalent by relation $\equiv_J$. That will, for example, result in
 \[
-    1\bm{243} \sim_J 1\bm{432}
+    1\bm{243} \equiv_J 1\bm{432}
 \]
 
 An equivalence relation on $\Sym = \cup_{n \geq 1} \Sym_n$ splits each $\Sym_n$
@@ -211,11 +211,11 @@ only one normal form.
 \begin{corollary}
     If $R$ is a terminating and confluent pattern-rewriting system, then the set
     of $\dom(R)$-avoiding permutations in $S_n$ is a complete set of
-    representatives for $S_n / \sim_R$, the set of equivalence classes of
-    $\sim_R$.
+    representatives for $S_n / \equiv_R$, the set of equivalence classes of
+    $\equiv_R$.
 \end{corollary}
 
-We can derive rewrite relations from a given equivalence relation $\sim_J$.
+We can derive rewrite relations from a given equivalence relation $\equiv_J$.
 The only condition we set on those derived rewrite relations is that their
 equivalence closure must be equal to the given equivalence relation.
 A set of equivalent pairs of patterns $J$ is equal to the set of rewrites to
@@ -233,7 +233,7 @@ either direction.
     \patternrule 312\}$, $\{321 \patternrule 123, 312 \patternrule 132\}$ is
     equal to the equivalence relation induced by $\{ \{ 123, 321 \} \}$.
 
-    So for all of these $R$ we have that $\sim_J$ is the same as $\sim_R$.
+    So for all of these $R$ we have that $\equiv_J$ is the same as $\equiv_R$.
 \end{example}
 
 An element of an canonical family equivalence relation $\{ \alpha, \beta \}$ is
@@ -253,7 +253,7 @@ make them confluent. These terminating systems are composed of single-image
 systems that each are created from a respective equivalence relation.
 
 \subsection{Increasing statistics}
-A statistic is any function $f : \Sym \to \mathbb{N}$. We call $f$ an increasing
+A \emph{statistic} is any function $f : \Sym \to \mathbb{N}$. We call $f$ an increasing
 statistic with respect to $R$ if $\alpha \to_R \beta$ implies that $f(\alpha) < f(\beta)$.
 
 \begin{lemma}
@@ -291,81 +291,13 @@ Let's take one example from Claesson's paper.
     $\{ \{ 12, 21 \} \}$, as found by Stanley CITE.
 \end{example}
 
-\section{Finding systems automatically}
+\section{Finding terminating and confluent systems}
 Claesson only found systems corresponding to equivalence relations induced by a
 single set of equivalent patterns. We will introduce a method for finding
 systems for equivalence relations induced by any number of sets.
 
-\subsection{Single-image systems}
-
-Let's begin focusing on \emph{single-image systems}. That is, systems, which
-have only a single pattern as their image. Claesson looked at these kinds
-of systems. A single-image system corresponds to a set of patterns.
-We then join a family the single-image systems to
-create a system that corresponds to a respective family of equivalences.
-
-Let us introduce a method for determining a terminating system given an
-equivalence of patterns.
-
-\begin{lemma}
-    Let $E$ be a single-image system. If $\pi \patternrule \rho$ is in $E$ and 
-    \[
-        \sum\nolimits_\rho(u\pi v) < \sum\nolimits_\rho(u \rho v) \tag{$\ast$}
-        \label{increasingimage}
-    \]
-    then $\sum$ parameterized by the image of $E$ is an increasing statistic
-    with respect to $E$.
-\end{lemma}
-\begin{proof}
-    If $\pi \to \rho$ is in $E$ then we see $\sum_\rho(\pi) <
-    \sum_\rho(\rho)$.  We see that each application of a rule of the system
-    will only make the resulting permutation have a higher sigma value.
-\end{proof}
-
- We also let $\shr(\alpha,
-\beta)$ signify the part where, if $\alpha$ and $\beta$ form a cluster, they
-share. $\shr(132, 213) = 32$. We assume that they just have one cluster, since
-we're not clustering the same pattern, 123 and 123, for example. We index a
-permutation $\alpha$ with $(\alpha)_i$, $1 \leq i \leq |\alpha|$.
-
-\begin{lemma}
-    Let $E$ be a single-image system with $\{\rho\} = \img(E)$ and $n = |\rho|$. If
-    \[
-        (\pi_i)_j = (\rho)_j \quad \textnormal{where} \quad n-\len(\shr(\pi_i,
-        \rho)) \leq j \leq n \tag{$\ast\ast$} \label{joininvariance}
-    \]
-    for each $\pi_i \patternrule \rho \in E$ then $E$ fulfills condition
-    \eqref{increasingimage}. 
-\end{lemma}
-\begin{proof}
-    Let us assume that we have a rule in $E$, namely $\pi \patternrule \rho$ and so
-    $0 = \sum_\rho(\pi) < \sum_\rho(\rho) = 1$. Then $u \pi v \to u \rho v$. 
-    If $\rho$ is fully contained in either $u$ or $v$ then $\to$ won't have any
-    implication for those occurrences. If $\rho$ appears in $u\pi$ then
-    application of the rule will move it further to the right, increasing the
-    value of sigma. If $\rho$ appears in $\pi v$ then we assume it's static for
-    that part so we will have two occurrences of $\rho$, one where $\pi$ was and
-    then we did not alter other one.
-    We can see that every application of rules from $R$ will increase.
-\end{proof}
-
-So by looking at the two lemmas together we have that if a single-image system
-fulfills \eqref{joininvariance} then sigma parameterized by the image of $E$ is
-an increasing statistic. Hence $E$ is terminating.
-
-Let us turn to families of equivalences which can generate systems with more
-than one image.
-
-\subsection{Multi-image systems}
-\begin{lemma}
-    A family of single-image systems joined together induce an equivalence
-    relation that is the same as defined by the family of equivalences
-    corresponding to each system.
-\end{lemma}
-\begin{proof}
-    Each $x$ in $\Sym$ has a normal form by Corollary 1.1 and we are still counting
-    them, just as with single-image systems.
-\end{proof}
+\subsection{Join invariance}
+Let us begin by generelizing the statistic sigma Anders introduced in his paper.
 
 \begin{definition}
     A sigma statistic parameterized by a set of patterns $\Pi$ is defined as
@@ -374,17 +306,9 @@ than one image.
     $$
 \end{definition}
 
-\begin{lemma}
-    Let $R$ be a rewrite system. If $\pi \patternrule \rho$ is in $R$ and 
-    \[
-        \sum\nolimits_{\img(R)}(u\pi v) < \sum\nolimits_{\img(R)}(u \rho v) \tag{$\ast$}
-        \label{increasingimage}
-    \]
-    then $\sum$ parameterized by the image of $R$ is an increasing statistic
-    with respect to $R$.
-\end{lemma}
-If \eqref{increasingimage} applies to a system then we see that a set of it's
-images is increasing.
+We also notice that by definiton of increasing statistic that
+$\alpha \to_R \beta$ is equivalent to the statement $u \pi v \to_R u \rho v$
+then $f(u \pi v) < f(u \rho v)$.
 
 \begin{lemma}
     Let $R$ be a rewrite system with rules of length $n$. If
@@ -392,30 +316,28 @@ images is increasing.
         \pi_j = \rho_j \quad \textnormal{where} \quad 
         n-\max(\len(\shr(\pi, \img(R)))) \leq j \leq n \tag{$\ast\ast$} \label{joininvariance}
     \]
-    for each $\pi \patternrule \rho \in R$ then $R$ fulfills condition
-    \eqref{increasingimage}. 
+    for each $\pi \patternrule \rho \in R$ then $\sum_{\img(R)}$ is an
+    increasing statistic with respect to $R$. 
 \end{lemma}
-
-With this new definition we can work with equivalence relations that contain more than one
-equivalence.
-
-\begin{theorem}
-    Let $R$ be a system composed of the single-image systems $E_i$ which fulfill
-    condition \eqref{joininvariance}. We say $\{\rho_i\} = \img(E_i)$. Then
-    $\sum\nolimits_{\rho_i}$ is an increasing statistic with respect to each
-    $E_i$ and then by summing these statistics together we have an increasing
-    statistic with respect to $R$, namely $\sum_{\img(R)}$.  The rewrite
-    relation $\to_R$ is hence terminating.
-\end{theorem}
 \begin{proof}
-    We want to show that
+    Let $\alpha \to_R \beta$. Then there is a rule $\pi \patternrule \rho$ in
+    $R$ so that $u \pi v \to_R u \rho v$, where $\alpha = u \pi v$ and $\beta =
+    u \rho v$. 
+
+    If elements of $\img(R)$ is fully contained in either $u$ or $v$ then we
+    can safely ignore them. If an element (there can only be one) appears in $u\pi$ then
+    $u \rho$ will have a higher sigma value. If an element appears in $\pi v$
+    then by our condition it will also appear in $\rho v$.
+    So
     \[
-        \sum\nolimits_{\img(R)}(u\pi v) < \sum\nolimits_{\img(R)}(u \rho v) \tag{$\ast$}
-        \label{increasingimage}
+        \sum_{\img(R)}(\alpha) < \sum_{\img(R)}(\beta)
     \]
-    We have to make sure that clusters between images and domains of seperate
-    systems are all shallow.
 \end{proof}
+
+\begin{corollary}
+    Let $R$ be a system that is share invariant. Then $\sum_{\img(R)}$ is an
+    increasing statistic for $R$, hence $R$ induces a terminating rewrite relation.
+\end{corollary}
 
 We then go through each partition of $\Sym_3$ and look at all the possible
 system a partition can generate. We then apply theorem to each of those systems
@@ -425,33 +347,13 @@ partition we are left with a set of systems that are terminating.
 Those systems are 154, of 203.
 
 \subsection{Making a terminating system confluent}
-First we can reduce the amount we check by the symmetries of the square.
-If we show that a system is both terminating and confluent, then all systems
-which we can arrive at through mirroring the permutations etc are also
-terminating and confluent.
+Lemma $3.3$ in Anders' paper gives us a convinient test to tell if a system is
+confluent. 
 
-With a system that is terminating, then it's possible to preserve its
-termination when making it confluent.
-By ensuring that all rules that are added have a positive sigma difference
-we can be certain that a system is still confluent. 
-
-The splitter permutation is the shortest cluster in $\Ocal(R)$.
-
-A sigma difference of a rule $\alpha \patternrule \beta$ under an 
-statistic would be
-\[
-    \Delta(f, \alpha \patternrule \beta) = f(\beta) - f(\alpha)
-\]
-
-\begin{theorem}
-We use it to check if a statistic is increasing for a certain rule.
-If $\Delta(f, \alpha \patternrule \beta) > 0$ for all $\alpha \patternrule \beta
-\in R$ then $f$ is an increasing statistic under $R$.
-\end{theorem}
+We run the following algorithm on a terminating system
 
 \lstset{basicstyle=\footnotesize\ttfamily, frame=single, breaklines=true,
 mathescape=true}
-
 \begin{minipage}{\linewidth}
 \begin{lstlisting}[title={Algorithm 1}]
 algo1(sys):
@@ -462,26 +364,33 @@ algo1(sys):
     if sys is confluent then
         return sys
 
-    s := choose shortest cluster in O(R)
+    s := choose shortest diverging cluster in O(R)
     rules := { a -> b | a, b are normal forms of s, $\Delta_f$(a -> b) > 0 }
-    rule := rule from rules chosen by maximum sigma difference of rule
 
     if rules = $\emptyset$ then
         return failure
+
+    rule := rule from rules chosen by maximum sigma difference of rule
 
     return algo(sys + rule)
 \end{lstlisting}
 \end{minipage}
 
-We shall prove that each algorithm doesn't ruin the termination of the system
-under the statistic $\img(R)$, original $R$. With image.
+Let us give some proof that these added rules which make the system confluent do
+not make the system non-terminating.
+ 
+We have to make sure that the rule adds images or moves them to the right and does not ruin
+occurrences of any of the images present in the source permutation.
 
-\begin{proof}
-All rules are on the form
-domdom imgdom domimg. We want to show that a rule added with the algorithm does
-not ruin any img appearences it might cluster with and that rule also obeys
-\eqref{increasingimage}. For the original image.
-\end{proof}
+\[
+\begin{tikzcd}  
+    & \mathbf{imgdomdomimg} \arrow[dl] \arrow[dr] & \\
+    \mathrm{img}\mathbf{img}\mathrm{dom}\mathbf{img} & &
+    \mathbf{img}\mathrm{dom}\mathbf{imgimg}
+\end{tikzcd}
+\]
+
+We see that the system is still terminating under the original $\img(R)$
 
 \section{Application, result and verification}
 There are 10 different Wilf-classes for the equivalences of partitions of $S_3$.

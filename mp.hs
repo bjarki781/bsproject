@@ -128,7 +128,9 @@ rule_check sys_image (t, r) = ekat m t == ekat m r
     m = maximum $ map (lenshr t) sys_image
 
 joininvariance_check :: System -> Bool
-joininvariance_check system = all (rule_check (img system)) system
+joininvariance_check system = all (rule_check image) system
+  where
+    image = filter ((==3) . length) $ img system
 
 windows :: Int -> [a] -> [[a]]
 windows m xs = [take m $ drop n xs | n <- [0..length xs - m]]
@@ -174,7 +176,7 @@ make_single_image_systems :: Equivalence -> [System]
 make_single_image_systems eq = [[(domain, image) | domain <- delete image eq] | image <- eq]
 
 make_confluent_system :: [System] -> Maybe System
-make_confluent_system = listToMaybe . sortOn length . mapMaybe (\sys -> confluentize (img sys) sys)
+make_confluent_system = listToMaybe . filter joininvariance_check . sortOn length . mapMaybe (\sys -> confluentize (img sys) sys)
 
 sym_partitions :: [[Equivalence]]
 sym_partitions = tail $ map (filter (\p -> length p > 1)) $ partitions $ sym 3
