@@ -2,6 +2,7 @@ import Data.Maybe
 import Data.Char
 import Data.List
 import GHC.Exts
+import System.IO
 
 type Perm = [Int]
 type Rule = (Perm, Perm)
@@ -24,8 +25,12 @@ partitions xs = map tail $ par xs
           bites [] = [[]]
           bites ys = nub $ map sort $ [y:p | y <- ys, p <- []:(bites $ delete y ys)]
 
+verify :: ([Equivalence], [Int]) -> ([Equivalence], Bool)
+verify (equivs, sequence) = (equivs, test 6 equivs == (take 6 sequence))
+
 main = do
-    mapM_ print $ map snd tester
+    txt <- readFile "appendix.raw" 
+    mapM_ (print . verify . read) $ lines txt
 
 tester = map (\eqs -> (eqs, test 6 eqs)) $ map (filter (\p -> length p > 1)) $ partitions $ sym 3
 

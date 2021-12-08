@@ -46,8 +46,8 @@ def C(T, clusters):
     f = sum([(-1)^i * det(mremoved(I - A, i+1, 1)) for i in range(1, len(T)+1)])
     return (1/det(I - A)) * f
 
-def sequence(expression, n):
-    F = sum([factorial(m)*expression^m for m in range(n+1)])
+def sequence(xclustergf, n):
+    F = sum([factorial(m)*xclustergf^m for m in range(n+1)])
     R = PowerSeriesRing(QQ,"x",default_prec=15)
     t = list(R(F))[1:n]
     try:
@@ -65,6 +65,9 @@ def show_rule(rule):
 
 def show_equivalence(eq):
     return '\{' + ', '.join([show_permutation(prm) for prm in eq]) + '\}'
+ 
+def equivalence_size(eqs):
+    return sum([len(eq)-1 for eq in eqs])
 
 def nub(seq):
     seen = set()
@@ -72,88 +75,83 @@ def nub(seq):
     return [x for x in seq if not (x in seen or seen_add(x))]
 
 def generate_latex(seq_dict):
+    action_names = ['\\phantom{.}', 'H', 'V', 'D_1', 'D_2', 'R_{90}', 'R_{180}', 'R_{270}']
+               
+    sys.stdout = open('appendix.tex', 'w')
+    fi = open('appendix.raw', 'w')
+    
     print('\\allowdisplaybreaks')
-    print('\\begin{scriptsize}')
+    print('\\begin{tiny}')
     
     for e in seq_dict:
         print('$$')
         print('\\begin{matrix}')
         exprs = []
-        for _, _, _, _, expr, _, raw_expr in seq_dict[e]:
-            exprs.append((expr, raw_expr))
+        for _, _, _, _, xclustergf, clustergf, _ in seq_dict[e]:
+            exprs.append((xclustergf, clustergf))
 
-        for exprr, raw_exprr in nub(exprs):
+        for xcgf, cgf in nub(exprs):
             print('\\sum_{m \geq 0} m! \\left(')
-            print(latex(exprr))
+            print(latex(xcgf))
             print('\\right)^m')
 
             print('\\ ')
-            q, r = raw_exprr.numerator().quo_rem(raw_exprr.denominator())
-            print(latex((q, r/raw_exprr.denominator())))
+            print(latex(cgf))
 
         print('\\\\')
 
         seq, name = e
-        print(latex(seq))
+        print(latex(list(seq) + ['...']))
+        print('\\ ')
         print('\\texttt{' + name + '}')
         print('\\end{matrix}')
         print('$$')
+
+        print('\\vspace{-1em}')
+
         print('\\begin{align}')
         for i, d in enumerate(seq_dict[e]):
-            equivs, R, domain, clusters, expr, match, _ = d
+            equivs, R, domain, clusters, _, _, index = d
+
+            print((equivs, list(seq)), file=fi)
+
             if equivs == []:
                 print('\\textnormal{the identity equivalence}')
                 continue
-            #if match:
-            #    print('\\text{RRR}')
-            #else:
-            #    print('\\text{VVV}')
-
-            #print('\\quad')
 
             print('\{' + ', '.join([show_equivalence(e) for e in equivs]) + '\}')
-            print('\\ ')
+            print('\\quad')
+            
+            print('&')
+
+            print(action_names[index])
 
             print('&')
             print('\\begin{matrix}')
             print('\\\\'.join([show_rule(r) for r in R]))
             print('\\end{matrix}')
 
-            if i != len(seq_dict[e]) - 1:
-                print('\\\\')
+            if i == len(seq_dict[e]) - 1:
+                break
+
+            print('\\\\')
 
         print('\\end{align}')
-    print('\\end{scriptsize}')
-
-verify_data = {}
-for line in open('verify_data', 'r'):
-    equivs, seq = eval(line)
-    verify_data[str(equivs)] = seq
+    print('\\end{tiny}')
 
 master = {}
 for line in sys.stdin:
     t = eval(line)
-    equivs, system, domain, clusters = t
-    raw_expr = C(domain, clusters)
-    expr = x + raw_expr
+    equivs, system, domain, clusters, index = t
+    clustergf = C(domain, clusters)
+    xclustergf = x + clustergf
 
-    s = sequence(expr, 8)
-    match = False
-    try:
-        ver_seq = verify_data[str(equivs)]
-        match = tuple(ver_seq) == s[0][0:6]
-    except KeyError:
-        pass
-        
-    u = (equivs, system, domain, clusters, expr, match, raw_expr)
+    s = sequence(xclustergf, 8)
+    u = (equivs, system, domain, clusters, xclustergf, clustergf, index)
     if s not in master:
         master[s] = [u]
     else:
         master[s].append(u)
 
 generate_latex(master)
-
-#for line in sys.stdin:
-#    equivs, R, domain, clusters = eval(line)
-#    print(sequence(domain, clusters, 8))
 

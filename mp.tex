@@ -92,9 +92,9 @@
 \end{abstract}
 
 \section{Introduction}
-Permutation patterns are powerful tools which can be utilized to solve various
-problems. example, example and example. They can be made to obey various
-constrains, which are formalized by mesh patterns. \cite{claesson:2011}
+Permutation patterns are permutations which we can match with parts of other
+permutations, under various constrains, which are formalized by mesh patterns.
+\cite{claesson:2011}
 
 Classical permutation patterns do not have any constraints on their matches but then we can
 constrain them such that the matches' positions or values must be adjacent.
@@ -109,9 +109,9 @@ pattern, then we would have the following matches in the permutation $15432$.
     \bm{1}54\bm{32}
 \]
 We will look again at the same pattern and permutation, but assume that the
-pattern match is constrained by positions.
+pattern match is constrained by positions. Then we have the match
 \[
-    \bm{154}32
+    \bm{154}32.
 \]
 Again, looking at at the same pattern and permutation, but assume that the
 pattern is constrained so that the values must be adjacent we have the following
@@ -128,8 +128,11 @@ have the Hertzsprung match
     1\bm{243}.
 \]
 
+From this point onward, everytime we mention patterns we are speaking about
+Hertzsprung patterns.
+
 \subsection{Equivalence, equivalence classes and motivation}
-We can look at patterns as being equivalent. Transposition of each pattern into
+We can look at patterns as being equivalent. We say transposition of each pattern into
 the other in a permutation will result in an equivalent permutation. Throughout
 this article we represent some equivalent patterns with be a family of sets, signifying
 a family of equivalences:
@@ -145,9 +148,9 @@ This is actually a shorthand for
 which we call the canonical form.
 
 A family of equivalences $J$ will induce an equivalence relation which we call $\equiv_J$. We
-say $u \pi v \equiv_J u \rho v$ if $\{ \pi, \tau \} \in J$.
+say $u \pi v \equiv_J u \rho v$ if $\{ \pi, \tau \} \in J$, with $u,v \in \Sym$.
 
-If we say $J = \{ \{ 132, 321 \} \}$ then we consider the patterns $132$ and $321$ to
+For example, if we say $J = \{ \{ 132, 321 \} \}$ then we consider the patterns $132$ and $321$ to
 be equivalent by relation $\equiv_J$. That will, for example, result in
 \[
     1\bm{243} \equiv_J 1\bm{432}
@@ -161,12 +164,13 @@ first two types but the spring of 2021 Claesson published a preprint of his
 article that gives a semi-automatic way of enumerating equivalence classes of
 the last type.
 
-In this article we will attempt to give an automatic method for enumerating the
-equivalence classes defined by partitions of $\Sym_3$ and some thoughts on the
-resulting generating functions.
+In this article we will attempt to use Anders method to calculate joint
+distributions of as many equivalence classes defined by partitions of $\Sym_3$
+as we can.
 
 To enumerate these different equivalence classes this we will introduce
-pattern-rewriting systems.
+pattern-rewriting systems. They are the only non-automatic part of the method
+given by Anders.
 
 \subsection{Pattern-rewriting systems}
 A pattern-rewriting system is a subset $R \subset \cup_{n} \Sym_n \times \Sym_n$.
@@ -177,7 +181,7 @@ Juxtaposition of permutations signifies concatenation, so if $\pi=123$ and
 $\tau=321$ then $\pi\tau=123654$ with the left argument being unchanged and the
 right pushed up.
 
-We use the variables $\alpha$ and $\beta$ for whole permutations, 
+As for notation, we use the variables $\alpha$ and $\beta$ for whole permutations, 
 the variables $\pi$, $\rho$, $\tau$ and $\sigma$ for patterns.
 Finally we use the variables $u$ and $v$ for slices of permutations.
 
@@ -187,7 +191,7 @@ we can write $p = u \alpha v$ and $q = u \beta v$, where
 $u$ and $v$ are some permutations.  Note that the relation is
 length-preserving. For example, if $R = \{123 \patternrule 321\}$, then $1234 \to_R 3214$. 
 
-\breath We denote the domain of $R$ by $\dom(R) = \{\alpha : \alpha \patternrule
+We denote the domain of $R$ by $\dom(R) = \{\alpha : \alpha \patternrule
 \beta \in R\}$. The image of $R$ we in turn write $\img(R) = \{\beta : \alpha
 \patternrule \beta \in R\}$. We write the reflexive transitive closure of
 $\to_R$ as $\tostar_R$. 
@@ -248,10 +252,6 @@ permutations which is the same thing as enumerating different equivalence
 classes.  Section 2 of Claesson's paper provides us with a way to do that.
 \cite{claesson:2021}
 
-Our method boils down to finding systems which terminate, and we then try to
-make them confluent. These terminating systems are composed of single-image
-systems that each are created from a respective equivalence relation.
-
 \subsection{Increasing statistics}
 A \emph{statistic} is any function $f : \Sym \to \mathbb{N}$. We call $f$ an increasing
 statistic with respect to $R$ if $\alpha \to_R \beta$ implies that $f(\alpha) < f(\beta)$.
@@ -281,8 +281,6 @@ Let's take one example from Claesson's paper.
         \{ 21 \patternrule 12, 231 \patternrule 312 \}
     \]
 
-    \breath
-
     By his machinery we find that 
     \[
         \sum_{n \geq 1} \Sym_n(21, 231) = \sum_{m \geq 0} m!(x-x^2)^m
@@ -296,7 +294,7 @@ Claesson only found systems corresponding to equivalence relations induced by a
 single set of equivalent patterns. We will introduce a method for finding
 systems for equivalence relations induced by any number of sets.
 
-\subsection{Join invariance}
+\subsection{Share invariance}
 Let us begin by generelizing the statistic sigma Anders introduced in his paper.
 
 \begin{definition}
@@ -313,11 +311,11 @@ then $f(u \pi v) < f(u \rho v)$.
 \begin{lemma}
     Let $R$ be a rewrite system with rules of length $n$. If
     \[
-        \pi_j = \rho_j \quad \textnormal{where} \quad 
-        n-\max(\len(\shr(\pi, \img(R)))) \leq j \leq n \tag{$\ast\ast$} \label{joininvariance}
+        \pi_j = \rho_j, n-m \leq j \leq n \tag{$\ast\ast$} \  \textnormal{where}
+        \ m = \max\nolimits_{\tau \in \img(R)} |\shr(\pi, \tau)|\label{shareinvariance}
     \]
-    for each $\pi \patternrule \rho \in R$ then $\sum_{\img(R)}$ is an
-    increasing statistic with respect to $R$. 
+    for each $\pi \patternrule \rho \in R$ then we say each rule is \emph{share
+    invariant}, and $\sum_{\img(R)}$ is an increasing statistic with respect to $R$. 
 \end{lemma}
 \begin{proof}
     Let $\alpha \to_R \beta$. Then there is a rule $\pi \patternrule \rho$ in
@@ -330,7 +328,7 @@ then $f(u \pi v) < f(u \rho v)$.
     then by our condition it will also appear in $\rho v$.
     So
     \[
-        \sum_{\img(R)}(\alpha) < \sum_{\img(R)}(\beta)
+        \sum\nolimits_{\img(R)}(\alpha) < \sum\nolimits_{\img(R)}(\beta)
     \]
 \end{proof}
 
@@ -355,17 +353,17 @@ We run the following algorithm on a terminating system
 \lstset{basicstyle=\footnotesize\ttfamily, frame=single, breaklines=true,
 mathescape=true}
 \begin{minipage}{\linewidth}
-\begin{lstlisting}[title={Algorithm 1}]
-algo1(sys):
-    in: a terminating system sys
-        the increasing statistic that proves sys termination f
+\begin{lstlisting}[title={Confluentize}]
+confluentize(sys):
+    in: a terminating system, sys
+        an set of patterns parameterizing an increasing statistic for sys, ps
     out: a terminating and confluent system or failure
 
     if sys is confluent then
         return sys
 
     s := choose shortest diverging cluster in O(R)
-    rules := { a -> b | a, b are normal forms of s, $\Delta_f$(a -> b) > 0 }
+    rules := { a -> b | a, b are normal forms of s, $\Delta\sum_{ps}$(a -> b) > 0 }
 
     if rules = $\emptyset$ then
         return failure
@@ -385,15 +383,25 @@ occurrences of any of the images present in the source permutation.
 \[
 \begin{tikzcd}  
     & \mathbf{imgdomdomimg} \arrow[dl] \arrow[dr] & \\
-    \mathrm{img}\mathbf{img}\mathrm{dom}\mathbf{img} & &
-    \mathbf{img}\mathrm{dom}\mathbf{imgimg}
+    \mathrm{img}\underline{\mathbf{img}\mathrm{dom}}\mathbf{img} \arrow[bend
+    right=30]{rr} & & \mathbf{img}\underline{\mathrm{dom}\mathbf{img}}\mathbf{img}
 \end{tikzcd}
 \]
 
-We see that the system is still terminating under the original $\img(R)$
+We see that the system is still terminating under the original $\img(R)$ as we see
+that a confluence rule is also share invariant under $\img(R)$.
+
+\subsection{Symmetries}
+We can find some more systems by applying the symmetries of the square. Since we
+can write permutations as mesh patterns, we can turn those mesh patterns as we
+please and get equivalent patterns. Two patterns turned in the same way make
+the same turned clusters. 
 
 \section{Application, result and verification}
-There are 10 different Wilf-classes for the equivalences of partitions of $S_3$.
+We can apply the above mentioned results by testing all rewrite systems of a
+family of equivelences for share invariance. If it is share invariant.
+We can see there are 9 different Wilf classes of those joint distributions we
+generated.
 
 \begin{definition}
     We can give a family of equivalences $J$ a size function which is the same
@@ -403,7 +411,7 @@ There are 10 different Wilf-classes for the equivalences of partitions of $S_3$.
     123, 321 \}, \{ 312, 231 \}, \{ 312, 213 \} \} | = 3$, for example.
 \end{definition}
 
-Let us collate all the results from Appendix!! into a table to show how the
+Let us collate all the results from Appendix A into a table to show how the
 different generating functions are distributed.
 
 The joint distribution is always on the form $\sum_{m \geq 0}m!(x+C(x))^m$ where $C$
@@ -414,69 +422,31 @@ is the cluster generating function corresponding to the system.
     $|J|$ & $C_J(x)$ & count & OEIS seq. \\
     \hline
     0 & $0$ & 1 & A000142 \\
-    1 & $-x^3$ & 15 & A212580 \\
-    2 & $-2x^3$ & 63 & A212432 \\
+    1 & $-x^3$ & 13 & A212580 \\
+    2 & $-2x^3$ & 52 & A212432 \\
     2 & $\frac{-x^3-x^4}{x^2+x+1}$ & 2 & A212581 \\
-    3 & $-3x^3$ & 78 & \emph{Not present} \\
-    3 & $\frac{-2x^3-2x^4-x^5}{x^2+x+1}$ & 12 & A212433 \\
-    4 & $-4x^3$ & 18 & \emph{Not present} \\
-    4 & $\frac{-3x^3-3x^4-2x^5}{x^2+x+1}$ & 12 & \emph{Not present}\\
+    3 & $-3x^3$ & 62 & \emph{Not present} \\
+    3 & $\frac{-2x^3-2x^4-x^5}{x^2+x+1}$ & 10 & A212433 \\
+    4 & $-4x^3$ & 8 & \emph{Not present} \\
+    4 & $\frac{-3x^3-3x^4-2x^5}{x^2+x+1}$ & 6 & \emph{Not present}\\
     4 & $\frac{-4x^3-2x^4}{x^2+x+1}$ & 1 & \emph{Not present} \\ 
-    5 & $\frac{-5x^3-3x^4-x^5}{x^2+x+1}$ & 1 & \emph{Not present}\\
+    \hline
+    \hline
+    5 & $\frac{-5x^3-3x^4-x^5}{x^2+x+1}$ & 1 & \emph{Not present} \\ 
 \end{tabular}
 \end{center}
 
 If we parameterize each $C_J$ with it's corresponding $J$ value then we have
 three different types of cluster generating functions.
 
-The most visible should be $C'_J(x) = -|J|x^3$.
-\begin{center}
-\begin{tabular}{c|c|c|c}
-    $|J|$ & $C'(x)$ & count & OEIS seq. \\
-    \hline
-    0 & $0$ & 1 & A000142 \\
-    1 & $-x^3$ & 15 & A212580 \\
-    2 & $-2x^3$ & 63 & A212432 \\
-    3 & $-3x^3$ & 78 & \emph{Not present} \\
-    4 & $-4x^3$ & 18 & \emph{Not present} \\
-\end{tabular}
-\end{center}
-This formula accounts for 175 of the 203 equivalence relations.
-What seems to be in common with these equivalences is that the domains of the
-single image systems are not clustering with each other. (?)
+Those types are $C'_J(x) = -|J|x^3$, $C''_J(x) = \frac{-|J|x^3-(|J|-1)x^4-(|J|-2)x^5}{x^2+x+1}$
+and $C'''_J(x) = \frac{-|J|x^3-(|J|-2)x^4-(|J|-4)x^5}{x^2+x+1}$
 
-Next we see $C''_J(x)$:
-\[
-    C''_J(x) = \frac{-|J|x^3-(|J|-1)x^4-(|J|-2)x^5}{x^2+x+1}
-\]
+For $C'''$ we only generated one system but Anders did generate a system for
+$J = \{\{ 123, 132, 213, 231, 312, 321 \}\}$ which cluster generating function
+is also $C'''_J$.
 
-The actual instances of $C''_J$:
-\begin{center}
-\begin{tabular}{c|c|c|c}
-    $|J|$ & $C''(x)$ & count & OEIS seq. \\
-    \hline
-    2 & $\frac{-x^3-x^4}{x^2+x+1}$ & 2 & A212581 \\
-    3 & $\frac{-2x^3-2x^4-x^5}{x^2+x+1}$ & 12 & A212433 \\
-    4 & $\frac{-3x^3-3x^4-2x^5}{x^2+x+1}$ & 12 & \emph{Not present}\\
-\end{tabular}
-\end{center}
-
-
-Finally we have $C'''_J(x)$ which accounts for only 2 equivalence relations.
-\[
-    C_3(n,x) = \frac{-nx^3-(n-2)x^4-(n-4)x^5}{x^2+x+1}
-\]
-with it's instances being
-\begin{center}
-\begin{tabular}{c|c|c|c}
-    $|J|$ & $C'''(x)$ & count & OEIS seq. \\
-    \hline
-    4 & $\frac{-4x^3-2x^4}{x^2+x+1}$ & 1 & \emph{Not present} \\ 
-    5 & $\frac{-5x^3-3x^4-x^5}{x^2+x+1}$ & 1 & \emph{Not present}\\
-\end{tabular}
-\end{center}
-
-So we see that the partitions of $\Sym_3$ are split into three different types
+So we see that these partitions of $\Sym_3$ are split into three different types
 of Wilf-classes, which we can describe by $C'$, $C''$ and $C'''$ and the size
 of the partition.
 
@@ -489,28 +459,18 @@ of the sequences manually. mp and tester were written in Haskell and mp in Sage 
 
 
 \section{Problems, questions and remarks}
-Are there larger systems, for example from $\Sym_4$, where we cannot apply the
-methods used in this paper? The methods here being the good-image algorithm and
-then the moving-pattern algorithm?
 
-\begin{example}
-    Take the equivalence $\{ \{ 213, 132 \} \}$. Its single-image systems,
-    ${\{ 213 \patternrule 132 \}}$ and ${\{ 132 \patternrule 213 \}}$
-    don't fulfill \eqref{joininvariance}.
-    When we apply some symmetries to it, we get $\{ \{ 312, 231 \} \}$ which has the same problem.
+Are there any other Wilf classes that appear for partitions on $\Sym_3$?
 
-    But for $\{ \{ 213, 132 \} \}$ sigma parameterized by a smaller statistic, namely $21$, is an
-    increasing statistic. So we say $132$ is a good image, there is exists an
-    increasing statistic with 132 as the system's image.
-    so $\{ 213 \patternrule 132 \}$ is a terminating system.
-\end{example}
+The share invariance idea does not apply to every type of rewrite system, but we
+have other increasing statistics for them. Take the equivalence $\{ \{ 213, 132
+\} \}$ for example. Its rewrite systems ${\{ 213 \patternrule 132 \}}$ and ${\{
+132 \patternrule 213 \}}$ don't fulfill \eqref{shareinvariance}. When we
+apply some symmetries to it, we get $\{ \{ 312, 231 \} \}$ which has the same
+problem.
 
-It turns out the rest, 27 out of 203 systems, all contain either $\{ \{ 213, 132
-\} \}$ or $\{ \{ 312, 231 \} \}$. When we explicitly give a good image for those
-systems then we get a terminating system for all 203 equivalence relations.
-
-With these observation we are able to find terminating systems for all set
-partitions on $\Sym_3$.
+But for $\{ 213 \patternrule 132 \}$ sigma parameterized by $21$ is an
+increasing statistic. Anders used that statistic quite a bit in his paper.
 
 Would similar formulas to the $C_n$ appear again when we would
 look at $\Sym_4$? Can we justify why we get these patterns?
@@ -524,20 +484,21 @@ of equivalences which of $C_1$, $C_2$ and $C_3$ will enumerate the equivalence
 classes induced by those family of equivalences?
 Can this way be generalized to partitions of $\Sym_n$, for every $n$?
 
-Why can we not use our algorithms for systems .. and .. ? And why do they work
-for the symmetries? Does there exist an algorithm that makes all systems confluent?
+Does there exist an algorithm that makes all systems confluent?
 
 The limitations of Claesson's method lay mainly in the fact that the domain of a
 system must be fully reduced for the calculations to work. For instance, we can not use his
 method for $\{ \{ 12, 21 \}, \{ 123, 321, 312, 213 \} \}$.
 
-Is there a universial increasing statistic for say all systems defined the
-partitions of $\Sym_3$? Can we prove otherwise?
-
 \begin{conjecture}
     If a partition $J$ on $\Sym_n$ has a system that has no non-self-clusters in
     its domain then its cluster generating function is $x^n-|J|x$.
 \end{conjecture}
+
+\begin{openproblem}
+    Find a terminating statistic for the rest of the equivalence relations
+    defined by partitions of $\Sym_3$.
+\end{openproblem}
 
 \section*{Acknowledgments}
 
