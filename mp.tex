@@ -1,4 +1,4 @@
-\documentclass[openany, a4paper, 11pt, english]{article}
+\documentclass[a4paper, 11pt, english]{article}
 \usepackage[top=3.17cm, bottom=3.27cm, left=3.5cm, right=3.5cm]{geometry}
 %\setlength{\parindent}{2.5em}
 \setlength{\parskip}{6pt plus 2pt minus 1pt}
@@ -28,6 +28,17 @@
 \newcommand{\parm}{\mathord{\color{black!33}\bullet}}
 
 \newcommand{\breath}{\vspace{6pt plus 2pt minus 1pt}\noindent}
+
+\newcommand{\pattern}[4]{
+  \raisebox{0.6ex}{
+  \begin{tikzpicture}[scale=0.3, baseline=(current bounding box.center), #1]
+    \foreach \x/\y in {#4}
+      \fill[NE-lines] (\x,\y) rectangle +(1,1);
+    \draw (0.01,0.01) grid (#2+0.99,#2+0.99);
+    \foreach \x/\y in {#3}
+      \filldraw (\x,\y) circle (5pt);
+  \end{tikzpicture}}
+}
 
 \newcommand{\patternrule}{ \mapsto \!}
 
@@ -71,7 +82,6 @@
 \DeclareMathOperator{\img}{img}
 \DeclareMathOperator{\des}{des}
 \DeclareMathOperator{\maj}{maj}
-\DeclareMathOperator{\len}{len}
 \DeclareMathOperator{\shr}{shr}
 
 \begin{document}
@@ -130,6 +140,10 @@ have the Hertzsprung match
 
 From this point onward, everytime we mention patterns we are speaking about
 Hertzsprung patterns.
+
+Finally, a Hertzsprung pattern that matches at the beginning of a permutation is
+called the (Hertzsprung) \emph{prefix} of that permutations, same with a pattern
+match at the end of a permutation, it is called a [Hertzsprung] \emph{suffix}.
 
 \subsection{Equivalence, equivalence classes and motivation}
 We can look at patterns as being equivalent. We say transposition of each pattern into
@@ -220,10 +234,14 @@ only one normal form.
 \end{corollary}
 
 We can derive rewrite relations from a given equivalence relation $\equiv_J$.
-The only condition we set on those derived rewrite relations is that their
-equivalence closure must be equal to the given equivalence relation.
-A set of equivalent pairs of patterns $J$ is equal to the set of rewrites to
-either direction. 
+We do this by choosing a pattern in each set of equivalent patterns and letting
+that be the image pattern. Then for every other pattern in the set we set that
+pattern as the domain and the image pattern as the image. Repeat for every set
+in the family and catenate the results.
+
+We do it this way to ensure that each rule increases the sum statistic of the
+image.
+
 \begin{example}
     The equivalence $\{ \{123, 321 \} \}$ induces an equivalence relation which is
     equal to the equivalence closure of the rewrite relation induced by two
@@ -268,6 +286,7 @@ statistic with respect to $R$ if $\alpha \to_R \beta$ implies that $f(\alpha) < 
     \cite{claesson:2021}.
 \end{definition}
 
+
 Let's take one example from Claesson's paper.
 \begin{example}
     Let's look at the equivalence $\{ \{ 12, 21 \} \}$. We can select the system $\{
@@ -280,6 +299,7 @@ Let's take one example from Claesson's paper.
     \[
         \{ 21 \patternrule 12, 231 \patternrule 312 \}
     \]
+    which is the result we are focusing on in this article.
 
     By his machinery we find that 
     \[
@@ -295,7 +315,7 @@ single set of equivalent patterns. We will introduce a method for finding
 systems for equivalence relations induced by any number of sets.
 
 \subsection{Share invariance}
-Let us begin by generelizing the statistic sigma Anders introduced in his paper.
+Let us begin by generalizing the sigma statistic Claesson introduced in his paper.
 
 \begin{definition}
     A sigma statistic parameterized by a set of patterns $\Pi$ is defined as
@@ -342,28 +362,47 @@ system a partition can generate. We then apply theorem to each of those systems
 and weed out those who don't fulfill the theorem's conditions. So for each
 partition we are left with a set of systems that are terminating.
 
-Those systems are 154, of 203.
-
 \subsection{Making a terminating system confluent}
 Lemma $3.3$ in Anders' paper gives us a convinient test to tell if a system is
 confluent. 
 
-We run the following algorithm on a terminating system
+What we need to show is a system is locally confluent, that is
+\begin{lemma}[Lemma 3.3 \cite{claesson:2021}]
+    Let $R$ be a terminating pattern rewriting system. Let 
+    \begin{equation}
+        \Ocal(R) = \cup_{\alpha_1, \alpha_2} \Ocal(\alpha_1, \alpha_2),
+    \end{equation}
+    where the union is over all pairs $(\alpha_1, \alpha_2) \in \dom(R) \times \dom(R)$. If, for all
+    $\pi \in \Ocal(R)$,
+    \begin{equation}
+        \rho_1 \from \pi \to \rho_2 \Longrightarrow \exists \sigma. \rho_1 \fromstar \sigma \tostar
+        \rho_2,
+    \end{equation}
+    then $\to_R$ is confluent.
+        
+\end{lemma}
+
+Using this test and a method for adding rules we devise an algorithm. The method we are using is the
+naive one, we simply find shortest cluster of the domain of the terminating system that have more than two
+normal forms under the system, it diverges, and we add a rule that joins these two normal forms
+together.
+
+Below is pseudocode for the algorithm.
 
 \lstset{basicstyle=\footnotesize\ttfamily, frame=single, breaklines=true,
 mathescape=true}
 \begin{minipage}{\linewidth}
-\begin{lstlisting}[title={Confluentize}]
+\begin{lstlisting}[title={Algorithm 1}]
 confluentize(sys):
     in: a terminating system, sys
-        an set of patterns parameterizing an increasing statistic for sys, ps
+        increasing statistic that proves termination of sys, f
     out: a terminating and confluent system or failure
 
     if sys is confluent then
         return sys
 
     s := choose shortest diverging cluster in O(R)
-    rules := { a -> b | a, b are normal forms of s, $\Delta\sum_{ps}$(a -> b) > 0 }
+    rules := { a -> b | a, b are normal forms of s, f(a -> b) > 0 }
 
     if rules = $\emptyset$ then
         return failure
@@ -382,22 +421,125 @@ occurrences of any of the images present in the source permutation.
 
 \[
 \begin{tikzcd}  
-    & \mathbf{imgdomdomimg} \arrow[dl] \arrow[dr] & \\
-    \mathrm{img}\underline{\mathbf{img}\mathrm{dom}}\mathbf{img} \arrow[bend
-    right=30]{rr} & & \mathbf{img}\underline{\mathrm{dom}\mathbf{img}}\mathbf{img}
+    & \bm{img}\mathbf{domdom}\bm{img} \arrow[dl] \arrow[dr] & \\
+    img\underline{\mathbf{img}\mathrm{dom}}\bm{img} \arrow[bend
+    right=30, mapsto]{rr} & & \bm{img}\underline{\mathrm{dom}\mathbf{img}}\bm{img}
 \end{tikzcd}
 \]
+
+Here img represents a pattern in the image of a system, and dom a pattern in the domain of a system.
+If either is bold then that means that it is an actual occurrence of the pattern but if it is not
+then the occurrence has been ruined by an application of a rule from the system. The italicized
+img's at the beginnig and the end of the pattern represent possible occurrences of img around the
+pattern, just to show that they are not ruined either when applying this new rule.
+
+By casual induction we see that even if we take dom from the confluence rules
+then they will also be share invariant.
 
 We see that the system is still terminating under the original $\img(R)$ as we see
 that a confluence rule is also share invariant under $\img(R)$.
 
 \subsection{Symmetries}
-We can find some more systems by applying the symmetries of the square. Since we
-can write permutations as mesh patterns, we can turn those mesh patterns as we
-please and get equivalent patterns. Two patterns turned in the same way make
-the same turned clusters. 
+We can use symmetry to help us finding more terminating and confluent systems. 
 
-\section{Application, result and verification}
+Say $1423 \sim \{(1,1), (2,4), (3,2), (4,3)\}$. Let us graph it.
+% \pattern{ options to tikzpicture }{ |\pi| }{ pi }{ R }
+% E.g., for p = ( 3241, { (0,2), (1,3), (1,4), (4,2), (4,3) } ) type:
+% \pattern{}{ 4 }{ 1/3, 2/2, 3/4, 4/1 }{ 0/2, 1/3, 1/4, 4/2, 4/3 }
+%
+\[
+\pattern{}{4}{1/1, 2/4, 3/2, 4/3}{}
+\]
+By turning the picture by $V$ from $D_4$ we get
+\[
+\pattern{}{4}{1/4, 2/1, 3/3, 4/2}{}
+\]
+Which is equal to the pattern $4132$.
+We can use all the symmetries in $D_4$ to get equivalent families of equivalences or equivalent
+systems by using the symmetry on every pattern that is contained in the structure.
+
+\begin{sublemma}
+    If $R$ is a pattern-rewriting system and $T$ is a symmetry from $D_4$ then if
+    $x \to_R y$ then $T(x) \to_{T[R]} T(y)$.
+\end{sublemma}
+\begin{proof}
+    If $x \to_R y$ then we have $a \patternrule b$ in $R$ so we can write $x = u a v, y = u b v$. We
+    have a $T(a) \patternrule T(b)$ in $T[R]$, also $T(a)$ is a pattern in $T(u a v)$ and $T(b)$ is
+    a pattern in $T(u b v)$, $T$ must transform $uav$ and $ubv$ in the same way so $T(x) \to_{T[R]}
+    T(y)$
+\end{proof}
+
+\begin{lemma}
+    If $R$ induces a terminating relation then $T[R]$ also does, where $T$ is a symmetry in $D_4$.
+\end{lemma}
+\begin{proof}
+    If $a$ is a normal form under $R$, no $b$ exists so $a \to_R b$, we can set $a = T(a')$ and $b =
+    T(b')$ and get $T(a') \to_R T('b)$ and $T('b)$ does not exist, for all $a', b'$.
+\end{proof}
+
+\begin{lemma}
+    If $R$ is a confluent system then $T[R]$ is also. If lemma 3.3 applies to
+    $R$ then it also applies to $T[R]$, where $T$ is a symmetry in $D_4$.
+\end{lemma}
+\begin{proof}
+    If $R$ is locally confluent then $T[R]$ is also since for $R$
+    \[
+        y_1 \fromstar x \tostar y_2 \Longrightarrow \exists z. \  y_1 \tostar z \fromstar y_2.
+    \]
+    implies for $T(R)$
+    \[ 
+        T(y_1) \fromstar T(x) \tostar T(y_2) \Longrightarrow \exists T(z). \
+        T(y_1) \tostar T(z) \fromstar T(y_2).
+    \]
+    and then if $T[R]$ is locally confluent and terminating then by Newmann's
+    lemma $T[R]$ is confluent.
+\end{proof}
+
+So if $R$ is both terminating and confluent then a symmetry from $D_$ of $R$ is also terminating and
+confluent.
+
+It turns out that the equivalence classes induced by $T[R]$ are enumerated by
+the same generating function that enumerates the equivalence classes induced by
+$R$. We give a proof of that in Appendix A.
+
+\subsection{Examples}
+To illustrate the utility of the methods we have introduced we will look at two
+examples
+
+\begin{example}
+Let $J=\{\{ 132, 312 \}, \{ 213, 231, 321 \}\}$. This family can generate 5
+different rewrite systems. We test each one for share invariance and one that
+matches is $R=\{ 132 \patternrule 312, 213 \patternrule 321, 231 \patternrule
+321 \}$. We then run our confluentzation algorithm on this terminating system
+and get the system
+...
+We know this one is both confluent and terminating so we can go on enumerating
+permutations that avoid $\dom(R)$ and get the result.
+...
+\end{example}
+
+For the next example we also use symmetry.
+
+\begin{example}
+Let $J = \{\{123, 132, 231\}, \{312, 321\}\}$. We look for share invariant systems that $J$ might
+generate but none come up. We then look at each of the symmetries of $J$ and the rewrite systems
+those symmetries generate. When we try $D_2$ we get the family $\{ \{ 123, 132, 312 \}, \{ 231, 321
+\} \}$ for which there is a terminating and confluent rewrite system
+\[
+    \begin{matrix}
+        123 \patternrule 312 \\
+        132 \patternrule 312 \\
+        231 \patternrule 321 \\
+        3124 \patternrule 1423 \\
+        31254 \patternrule 12534
+    \end{matrix}
+\]
+Then we know $J$ is also terminating and confluent and has the same cluster generating function as
+$D_2(J)$, and therefore is in the same Wilf class.
+
+\end{example}
+
+\section{Overview of results}
 We can apply the above mentioned results by testing all rewrite systems of a
 family of equivelences for share invariance. If it is share invariant.
 We can see there are 9 different Wilf classes of those joint distributions we
@@ -458,7 +600,7 @@ were found in the OEIS, and finally tester which calculates the first 6 values
 of the sequences manually. mp and tester were written in Haskell and mp in Sage Math. 
 
 
-\section{Problems, questions and remarks}
+\section{Problems and questions}
 
 Are there any other Wilf classes that appear for partitions on $\Sym_3$?
 
@@ -505,11 +647,72 @@ method for $\{ \{ 12, 21 \}, \{ 123, 321, 312, 213 \} \}$.
 \bibliographystyle{plain}
 \bibliography{mp}
 
-\newgeometry{left=2cm,right=2cm,top=2cm,bottom=2cm}
+\clearpage
+
 \begin{appendices}
-\section{Terminating and confluent systems}
+\section{On enumerating symmetries}
+We seperate this proof from the main text since we did not explicitly introduce
+generating functions or any of the mechanisms Claesson uses in his paper to
+calculate cluster generating functions. Here we assume the reader has read
+section 2 of Claesson's paper.
+
+The rewrite systems we generate from $J$ are $\{ a \patternrule b, \dots \}$
+and then the rewrite system generated from $T[J]$ are $T[R]=\{ T(a) \patternrule T(b), \dots \}$
+so $T[\dom(R)]=\dom(T[R])$
+
+\begin{definition}
+    For $\sigma, \tau \in T$ define the set of permutations $\Ocal(\sigma,
+    \tau)$ by stipulating that $\pi \in \Ocal(\sigma, \tau)$ if and only if
+    \begin{enumerate}
+    \item $\sigma$ is a proper prefix of $\pi$,
+    \item $\tau$ is a proper suffix of $\pi$ and
+    \item $|\pi| < |\sigma| + |\tau|$.
+    \end{enumerate}
+\end{definition}
+
+\begin{lemma}
+Let $\tau$ and $\sigma$ be two patterns and $T$ be an element of $D_4$.
+Then 
+\[
+    \Ocal(T(\tau), T(\sigma)) = T[\Ocal(\tau, \sigma)]
+\]
+\end{lemma}
+\begin{proof}
+    $\Ocal(T(\tau), T(\sigma)) \subset T[\Ocal(\tau, \sigma)]$: 
+    $x \in \Ocal(T(\tau), T(\sigma))$, then $T(\tau)$ is a proper prefix of
+    $x$ and $T(\sigma)$ is a proper suffix of $x$. Since $T$ is a bijection we
+    have its inverse, $T^{-1}$. $\tau$ is a proper prefix of $T^{-1}(x)$ and 
+    $\sigma$ is a proper suffix of $T^{-1}(x)$. Also $|T^{-1}(x)| = x <
+    |T(\tau)| + |T(\sigma)| = |\tau| + |\sigma|$. Then $T^{-1}(x) \in \Ocal(\tau,
+    \sigma)$ and so $x \in T[\Ocal(\tau, \sigma)]$.
+
+    $T[\Ocal(\tau, \sigma)] \subset \Ocal(T(\tau), T(\sigma))$: 
+    $x \in T[\Ocal(\tau, \sigma)]$. Then $T^{-1}(x) \in \Ocal(\tau, \sigma)$
+    $\tau$ is a proper prefix of $T^{-1}(x)$ and $\sigma$ is a proper suffix of $T^{-1}(x)$. 
+    $T(\tau)$ is a proper prefix of $x$ and $T(\sigma)$ is a proper suffix of
+    $x$. Also $|x| = |T^{-1}(x)| < |\tau| + |\sigma| = |T(\sigma)| + |T(\tau)|$
+    And so $x \in \Ocal(T(\tau), T(\sigma))$.
+\end{proof}
+
+\begin{corollary}
+    We see that since 
+    \[
+        \Omega(\sigma, \tau) = \sum_{\pi \in \Ocal(\sigma, \tau)} x^{|\pi|-|\sigma|}
+    \]
+    we have
+    \[
+        \Omega(T(\sigma), T(\tau)) = \Omega(\sigma, \tau)
+    \]
+    and therefore $C_{T[J]} = C_J$.
+    If we have $J$ and can derive a $C_J$ from it, then for every $T(J)$ we can
+    derive a $C_{T(J)}$ and $C_J = C_{T(J)}$.
+\end{corollary}
+
+\section{Resulting systems}
 We categorize the equivalence families/equivalence relations by what their joint
 distribition is.
+
+\newgeometry{left=2cm,right=2cm,top=2cm,bottom=2cm}
 \begin{multicols}{2}
 \include{appendix}
 \end{multicols}
