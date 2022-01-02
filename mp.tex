@@ -132,8 +132,8 @@ match:
 \]
 
 Hertzsprung patterns constrain the match so both values and positions must be
-adjacent. There is no match for the Hertzsprung pattern $132$ in the example
-above but as a showcase, given the pattern $132$ and the permutation $1243$ we
+adjacent. The example permutation above avoids the Hertzsprung pattern $132$, that is, it does not have a match
+within the permutation. But as a showcase, given the pattern $132$ and the permutation $1243$ we
 have the Hertzsprung match
 \[
     1\bm{243}.
@@ -145,7 +145,6 @@ Hertzsprung patterns.
 Finally, a Hertzsprung pattern that matches the beginning of a permutation is
 called the (Hertzsprung) \emph{prefix} of that permutations. In a similar way, a pattern
 that matches the end of a permutation we call a (Hertzsprung) \emph{suffix}.
-
 
 \subsection{Equivalences, equivalence classes and motivation}
 We can define an equivalence relation using patterns. For a permutation with a certain pattern
@@ -189,13 +188,17 @@ but they could be any other member of the respective sets.
 
 Again, a collection of sets of equivalent patterns induces a pattern-replacement equivalence.
 To put it in more formal language, a family of equivalent-pattern sets $J$ will induce an equivalence relation
-which we call $\equiv_J$. We say $u \pi v \equiv_J u \rho v$ if $\{ \pi, \tau \} \in J$, with $u,v
+which we call $\equiv_J$. We say $u \pi v \equiv_J u \rho v$ if $\{ \pi, \rho \} \in J$, with $u,v
 \in \Sym$.
 
 For example, if we say $J = \{ \{ 132, 321 \} \}$ then we consider the patterns $132$ and $321$ to
 be equivalent by the relation $\equiv_J$. That will e.g. result in
 \[
     1\bm{243}5 \equiv_J 1\bm{432}5
+\]
+or
+\[
+  \bm{132}4\bm{765} \equiv_J \bm{321}4\bm{576}
 \]
 
 An equivalence relation on $\Sym = \cup_{n \geq 1} \Sym_n$ splits each $\Sym_n$
@@ -210,10 +213,11 @@ last type.
 
 To enumerate these different equivalence classes we will introduce Claesson's 
 pattern-rewriting systems. They are the only part of the method given by Claesson that requires
-some manual work. 
+some manual work. The work involves finding systems that fulfil a certain property, namely
+\emph{termination}.
 
 \subsection{Pattern-rewriting systems}
-A \emph{pattern-rewriting system} is a subset $R \subset \cup_{n} \Sym_n \times \Sym_n$.
+A \emph{pattern-rewriting system} is a subset $R \subset \cup_{n} (\Sym_n \times \Sym_n)$.
 We use the notation $\pi \patternrule \rho$ for $(\pi, \rho)$ when referring
 to elements of a pattern-rewriting system $R$. 
 
@@ -241,12 +245,12 @@ We can look at the relation $\to_R$ as a function with its domain being all perm
 patterns from the domain of $R$ and its image all permutations containing patterns from the image of
 $R$.
 
-An element $x$ in $\Sym$ is said to be in normal form under the relation $\to_R$
+An element $x$ in $\Sym$ is said to be in \emph{normal form} under the relation $\to_R$
 if there is no $y \in \Sym$ so that $x \to_R y$. A relation $\to_R$ is said to be
-terminating if there exist no infinite chains $x_0 \to_R x_1 \to_R \cdots$. If
+\emph{terminating} if there exist no infinite chains $x_0 \to_R x_1 \to_R \cdots$. If
 $\to_R$ is terminating then every element has at least one normal form. 
 
-We say a relation is confluent if and only if
+We say a relation is \emph{confluent} if and only if
 $$
     y_1 \fromstar x \tostar y_2 \Longrightarrow 
     \exists z. \  y_1 \tostar z \fromstar y_2.
@@ -258,11 +262,15 @@ If a system is both terminating and confluent, then every element has a one and
 only one normal form.
 
 \begin{corollary}
-    If $R$ is a terminating and confluent pattern-rewriting system, then the set
-    of $\dom(R)$-avoiding permutations in $S_n$ is a complete set of
-    representatives for $S_n / \equiv_R$, the set of equivalence classes of
-    $\equiv_R$.
+    If $R$ is a terminating and confluent pattern-rewriting system, then the set of
+    $\dom(R)$-avoiding permutations in $S_n$, which we also write $S_n(\dom(R))$, is a complete set of
+    representatives for $S_n / \equiv_R$, the set of equivalence classes of $\equiv_R$.
 \end{corollary}
+
+It is easy to create confluent systems from terminating one but it is rather difficult to find
+terminating systems. Later in this paper we give a lemma that makes it easy to determine if a given
+system is terminating. We then show that it works for the majority of equivalence relations defined
+by partitions of $\Sym_3$.
 
 We can generate rewrite systems from families of equivalences. Each pair $\{\alpha, \beta \}$ in the
 canonical form can either be made into the rule $\alpha \patternrule \beta$ or $\beta \patternrule
@@ -291,6 +299,8 @@ canonical form can either be made into the rule $\alpha \patternrule \beta$ or $
 \end{example}
 
 \subsection{Increasing statistics}
+It is rather difficult to determine if a system is terminating. Claesson introduced a method to
+do so involving \emph{increasing statistics}.
 A \emph{statistic} is any function $f : \Sym \to \mathbb{N}$. We call $f$ an increasing
 statistic with respect to $R$ if $a \to_R b$ implies that $f(a) < f(b)$.
 
@@ -305,7 +315,6 @@ statistic with respect to $R$ if $a \to_R b$ implies that $f(a) < f(b)$.
     parameterized by the pattern $\tau$.
     \cite{claesson:2021}.
 \end{definition}
-
 
 Let's take one example from Claesson's paper.
 \begin{example}
@@ -326,26 +335,36 @@ Let's take one example from Claesson's paper.
         \sum_{n \geq 1} \Sym_n(21, 231) = \sum_{m \geq 0} m!(x-x^2)^m
     \]
     which is the joint distribution of the equivalence classes defined by 
-    $\{ \{ 12, 21 \} \}$, as shown by Stanley CITE.
+    $\{ \{ 12, 21 \} \}$, as shown by Stanley \cite{stanley:2012}.
 \end{example}
+
+We will look more at increasing statistics and show that if systems fulfil a certain property called
+\emph{overlap invariance} then they are terminating due to a certain increasing statistic.
 
 \section{Finding terminating and confluent systems}
 Claesson only found systems corresponding to equivalence relations induced by a
-single set of equivalent patterns. We will introduce a method for finding
-systems for equivalence relations induced by any number of sets.
-
+single set of equivalent patterns. We introduce a new type of statistic which can determine the
+termination of rewriting systems generated from families with multiple equivalences.
 \subsection{Overlap invariance}
 Let us begin by generalizing the sigma statistic Claesson introduced in his paper.
-
 \begin{definition}
     A sigma statistic parameterized by a set of patterns $\Pi$ is defined as
     $$
         \Sigma_\Pi = \sum_{\pi \in \Pi} \Sigma_{\pi}.
     $$
 \end{definition}
+alongside reiterating the definition of $\Ocal$:
+\begin{definition}
+    For $\sigma, \tau \in T$ define the set of permutations $\Ocal(\sigma,
+    \tau)$ by stipulating that $\pi \in \Ocal(\sigma, \tau)$ if and only if
+    \begin{enumerate}
+    \item $\sigma$ is a proper prefix of $\pi$,
+    \item $\tau$ is a proper suffix of $\pi$ and
+    \item $|\pi| < |\sigma| + |\tau|$.
+    \end{enumerate}
+\end{definition}
 
-Let us also introduce the concept of a pattern-cluster \emph{overlap} and function $\ovl$.
-
+Then, we will define a cluster \emph{overlap} and the function $\ovl$.
 \begin{definition}
   When two patterns or permutations cluster we call the bit they share their \emph{overlap}.
   For permutations $a$ and $b$, we define $\ovl(a,b)$ as the maximum length of their overlaps if they 
@@ -357,7 +376,6 @@ Let us also introduce the concept of a pattern-cluster \emph{overlap} and functi
 \end{definition}
 
 We can then define \emph{overlap invariance}.
-
 \begin{definition}
     Let $R$ be a pattern-rewriting system with rules of length $n$. If
     \[
@@ -427,7 +445,7 @@ And since an increasing statistic under a system $R$ implies termination of the 
 induced by $R$ then we have as a corollary:
 
 \begin{corollary}
-    Let $R$ be overlap invariant and disjoint. Then $R$ induces a terminating rewrite relation.
+    Let $R$ be overlap invariant and disjoint. Then $R$ induces a terminating pattern-rewriting relation.
 \end{corollary}
 
 \subsection{Making a terminating system confluent}
@@ -469,13 +487,13 @@ confluentize(sys):
     if sys is confluent then
         return sys
 
-    s := choose shortest diverging cluster in O(R)
+    s := choose shortest cluster in O(R) with more than one normal form
     rules := { a -> b | a, b are normal forms of s, f(a -> b) > 0 }
 
     if rules = $\emptyset$ then
         return failure
 
-    rule := rule from rules chosen by maximum sigma difference of rule
+    rule := rule from rules chosen by the maximum f(rule)
 
     return algo(sys + rule)
 \end{lstlisting}
@@ -621,8 +639,9 @@ and get the system
         31254 \patternrule 12534
     \end{matrix}
 \]
-This system is both confluent and terminating so we can go on enumerating
-permutations that avoid $\dom(R)$ and get the joint distribution
+This system is both confluent and terminating, which is our end goal.
+With that kind of system $R$ we can go on enumerating
+permutations that avoid $\dom(R)$ with Claesson's method and get the joint distribution
 \[
   \sum_{m \geq 0} m! (-3x^3 + x)^m.
 \]
@@ -684,17 +703,20 @@ Calculating the joint distribution of those systems gives us nine different Wilf
 
 \begin{definition}
     We can give a family of equivalences $J$ a size function which is the same
-    as the cardinality of the canonical form of the set of equivalences.
+    as the cardinality of a canonical form of the set of equivalences.
 
-    By this definition $| \{ \{ 123, 321 \}, \{ 312, 231, 213 \} \}| = | \{ \{
-    123, 321 \}, \{ 312, 231 \}, \{ 312, 213 \} \} | = 3$, for example.
+    By this definition 
+    \begin{align}
+      & | \{ \{ 123, 321 \}, \{ 312, 231, 213 \} \}| =  \\
+      & | \{ \{ 123, 321 \}, \{ 312, 231 \}, \{ 312, 213 \} \} | =  3
+    \end{align}
 \end{definition}
 
 Let us collate all the results from Appendix B into a table to show how the
 different generating functions are distributed.
 
-The joint distribution is always on the form $\sum_{m \geq 0}m!(x+C(x))^m$ where $C$
-is the cluster generating function corresponding to the system.
+The joint distribution is always on the form $\sum_{m \geq 0}m!(x+C_J(x))^m$ where $C$
+is the cluster generating function corresponding to the system $J$.
 
 \begin{center}
 \begin{tabular}{c|c|c|c}
@@ -798,16 +820,9 @@ generating functions or any of the mechanisms Claesson uses in his paper to
 calculate cluster generating functions. Here we assume the reader has read
 section 2 of Claesson's paper.
 
-Let us reiterate the definition of $\Ocal$ from Claesson's paper:
-\begin{definition}
-    For $\sigma, \tau \in T$ define the set of permutations $\Ocal(\sigma,
-    \tau)$ by stipulating that $\pi \in \Ocal(\sigma, \tau)$ if and only if
-    \begin{enumerate}
-    \item $\sigma$ is a proper prefix of $\pi$,
-    \item $\tau$ is a proper suffix of $\pi$ and
-    \item $|\pi| < |\sigma| + |\tau|$.
-    \end{enumerate}
-\end{definition}
+Given a family of equivalences $J$ its cluster generating function, and hence the generating
+function that enumerates the equivalence classes $J$ induces, is completely determined by how
+patterns in the equivalence cluster.
 
 \begin{lemma}
 Let $\tau$ and $\sigma$ be two patterns and $T$ be an element of $D_4$.
