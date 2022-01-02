@@ -391,10 +391,10 @@ specific type of pattern overlap is invariant.
 
 \begin{example}
   The system
-  \begin{align}
+  \begin{align*}
     (1) 123 \patternrule 213 \\
     (2) 312 \patternrule 132
-  \end{align}
+  \end{align*}
   is overlap invariant. The left hand side of (1) clusters with the right hand side of (2) and 
   $123_3 = 213_3$. The left hand side of (2) clusters with neither 213 nor 132.
 
@@ -526,93 +526,6 @@ then they will also be overlap invariant.
 We see that the system is still terminating under the original $\img(R)$ as
 that a confluence rule is also overlap invariant under $\img(R)$.
 
-\subsection{Symmetries}
-We can use symmetry to help us finding more terminating and confluent systems. A family of
-equivalences has a number of symmetries that share some properties, such as the generating
-function that enumerates the equivalence classes they induce. Symmetries of rewrite systems also
-share properties, such as termination or confluence.
-
-In this paper we use the geometric convention of $D_4$ being the symmetries of the quadrilateral, a
-group of order 8. Its elements are covered in the following table:
-
-\begin{center}
-\begin{tabular}{r|l}
-  $H$ & horizontal flip \\
-  $V$ & vertical flip \\
-  $D_1$ & diagonal flip over NW to SE \\
-  $D_2$ & diagonal flip over SW to NE \\
-  $R_0$ & identity element \\
-  $R_1$ & 90 degree rotation clockwise \\
-  $R_2$ & 180 degree rotation clockwise \\
-  $R_3$ & 270 degree rotation clockwise \\
-\end{tabular}
-\end{center}
-
-Let us begin by showing how symmetry acts on permutations. We can look at the
-permutation $1423$ as a set of pairs, with the first element of the pair being the position of the
-digit in the permutation and the second element the digit. This gives us the set $\{(1,1), (2,4), (3,2), (4,3)\}$. Let us
-graph it in a Cartesian coordinate system:
-\[
-\pattern{}{4}{1/1, 2/4, 3/2, 4/3}{}.
-\]
-By turning the picture by $V$ from $D_4$ we get
-\[
-\pattern{}{4}{1/4, 2/1, 3/3, 4/2}{}
-\]
-which is the permutation $4132$. 
-We can use all the symmetries in $D_4$ to get equivalent families of equivalences or equivalent
-systems by using the symmetry on every pattern that is contained in the structure.
-
-We define the transposition of a system by a symmetry $T$ as
-\begin{equation*}
-  T[R] = \{T(\pi) \patternrule T(\rho) \mid \pi \patternrule \rho \in R \}
-\end{equation*}
-and likewise the transposition of a family of equivalences as
-\begin{equation*}
-  T[J] = \{ \{ T(\alpha) \mid \alpha \in E \} \mid E \in J \}
-\end{equation*}
-
-\begin{lemma}
-    If $R$ is a pattern-rewriting system and $T$ is a symmetry from $D_4$ then 
-    $T(a) \to_{T[R]} T(b)$ if $a \to_R b$ .
-\end{lemma}
-\begin{proof}
-    If $a \to_R b$ then we have $\pi \patternrule \rho$ in $R$ so we can write $a = u \pi v, b = u
-    \rho v$. We have by definition $T(\pi) \patternrule T(\rho)$ in $T[R]$. We see that $T(\pi)$
-    occurs in $T(u \pi v)$ and $T(\rho)$ occurs in $T(u \rho v)$ since $T$ all the patterns are
-    Hertzsprung patterns, positions and values are adjacent.
-    $\pi v$ and $u \rho v$ in the same way so $T(a) \to_{T[R]} T(b)$
-\end{proof}
-
-\begin{corollary}
-  By induction we have that if $a \tostar_R b$ then $T(a) \tostar_{T[R]} T(b)$. So for all
-  valid statements involving $\to_R$, the same statements are valid for $\to_{T[R]}$. That includes
-  confluence and termination.
-\end{corollary}
-
-As a result of the lemma, a commutative diagram appears for the permutation $1423$,
-with $R=\{12 \patternrule 21 \}$.
-\[
-  \begin{matrix}
-    \pattern{}{4}{1/1, 2/4, 3/2, 4/3}{} & \begin{matrix} \to_R \\ \longrightarrow \end{matrix} & \pattern{}{4}{1/1, 2/4, 3/3, 4/2}{} \\
-    \begin{matrix}T & \downarrow\end{matrix} & & \begin{matrix} \downarrow & T \end{matrix} \\
-    \pattern{}{4}{1/4, 2/1, 3/3, 4/2}{} & \begin{matrix} \to_{T[R]} \\ \longrightarrow \end{matrix} & \pattern{}{4}{1/4, 2/1, 3/2, 4/3}{} \\
-  \end{matrix}
-\]
-or more generally, if we look at $\to_R$ as a function,
-\[
-  \begin{matrix}
-    \Sym_{\dom(R)} & \begin{matrix} \to_R \\ \longrightarrow \end{matrix} & \Sym_{\img(R)} \\
-    \begin{matrix}T & \downarrow\end{matrix} & & \begin{matrix} \downarrow & T \end{matrix} \\
-    \Sym_{\dom(T[R])} & \begin{matrix} \to_{T[R]} \\ \longrightarrow \end{matrix} & \Sym_{\img(T[R])} \\
-  \end{matrix}
-\]
-where $\Sym_P$, $P$ being a set of patterns, is the set of elements from $\Sym$ that have matches from $P$.
-
-It turns out that the equivalence classes induced by $T[R]$ are enumerated by
-the same generating function that enumerates the equivalence classes induced by
-$R$. We give a proof of that in Appendix A.
-
 \subsection{Examples}
 To illustrate the utility of the methods we have introduced we will look at two
 examples
@@ -651,10 +564,8 @@ permutations that avoid $\dom(R)$ with Claesson's method and get the joint distr
 For the next example we also use symmetry.
 
 \begin{example}
-Let $J = \{\{123, 132, 231\}, \{312, 321\}\}$. We look for overlap invariant systems that $J$ might
-generate but none come up. We then look at each of the symmetries of $J$ and the rewrite systems
-those symmetries generate. When we try $D_2$ we get the family $\{ \{ 123, 132, 312 \}, \{ 231, 321
-\} \}$ for which there is a terminating and confluent rewrite system
+Let $J = \{ \{ 123, 132, 312 \}, \{ 231, 321 \} \}$ for which there is a overlap invariant, hence
+terminating, and confluent pattern-rewriting system
 \[
     \begin{matrix}
         123 \patternrule 312 \\
@@ -664,8 +575,7 @@ those symmetries generate. When we try $D_2$ we get the family $\{ \{ 123, 132, 
         31254 \patternrule 12534
     \end{matrix}
 \]
-Then we know $J$ is also terminating and confluent and has the same cluster generating function as
-$D_2[J]$, which is
+Then the joint distribution is
 \[
   \sum_{m \geq 0} m! (-3x^3 + x)^m.
 \]
@@ -706,10 +616,10 @@ Calculating the joint distribution of those systems gives us nine different Wilf
     as the cardinality of a canonical form of the set of equivalences.
 
     By this definition 
-    \begin{align}
+    \begin{align*}
       & | \{ \{ 123, 321 \}, \{ 312, 231, 213 \} \}| =  \\
       & | \{ \{ 123, 321 \}, \{ 312, 231 \}, \{ 312, 213 \} \} | =  3
-    \end{align}
+    \end{align*}
 \end{definition}
 
 Let us collate all the results from Appendix B into a table to show how the
@@ -724,12 +634,12 @@ is the cluster generating function corresponding to the system $J$.
     \hline
     0 & $0$ & 1 & A000142 \\
     1 & $-x^3$ & 13 & A212580 \\
-    2 & $-2x^3$ & 52 & A212432 \\
+    2 & $-2x^3$ & 46 & A212432 \\
     2 & $\frac{-x^3-x^4}{x^2+x+1}$ & 2 & A212581 \\
-    3 & $-3x^3$ & 62 & \emph{Not present} \\
+    3 & $-3x^3$ & 45 & \emph{Not present} \\
     3 & $\frac{-2x^3-2x^4-x^5}{x^2+x+1}$ & 10 & A212433 \\
-    4 & $-4x^3$ & 8 & \emph{Not present} \\
-    4 & $\frac{-3x^3-3x^4-2x^5}{x^2+x+1}$ & 6 & \emph{Not present}\\
+    4 & $-4x^3$ & 4 & \emph{Not present} \\
+    4 & $\frac{-4x^3-3x^4-2x^5}{x^2+x+1}$ & 4 & \emph{Not present}\\
     4 & $\frac{-4x^3-2x^4}{x^2+x+1}$ & 1 & \emph{Not present} \\ 
     \hline
     \hline
@@ -814,58 +724,6 @@ Let us end with one conjecture and one open problem:
 \clearpage
 
 \begin{appendices}
-\section{On enumerating symmetries}
-We separate this proof from the main text since we did not explicitly introduce
-generating functions or any of the mechanisms Claesson uses in his paper to
-calculate cluster generating functions. Here we assume the reader has read
-section 2 of Claesson's paper.
-
-Given a family of equivalences $J$ its cluster generating function, and hence the generating
-function that enumerates the equivalence classes $J$ induces, is completely determined by how
-patterns in the equivalence cluster.
-
-\begin{lemma}
-Let $\tau$ and $\sigma$ be two patterns and $T$ be an element of $D_4$.
-Then 
-\[
-    \Ocal(T(\tau), T(\sigma)) = T[\Ocal(\tau, \sigma)].
-\]
-\end{lemma}
-\begin{proof}
-    $\Ocal(T(\tau), T(\sigma)) \subset T[\Ocal(\tau, \sigma)]$: 
-    $x \in \Ocal(T(\tau), T(\sigma))$, then $T(\tau)$ is a proper prefix of
-    $x$ and $T(\sigma)$ is a proper suffix of $x$. Since $T$ is a bijection we
-    have its inverse, $T^{-1}$. $\tau$ is a proper prefix/suffix of $T^{-1}(x)$ and 
-    $\sigma$ is a proper suffix/prefix of $T^{-1}(x)$. Also $|T^{-1}(x)| = x <
-    |T(\tau)| + |T(\sigma)| = |\tau| + |\sigma|$. Then $T^{-1}(x) \in \Ocal(\tau,
-    \sigma)$ and so $x \in T[\Ocal(\tau, \sigma)]$.
-
-    $T[\Ocal(\tau, \sigma)] \subset \Ocal(T(\tau), T(\sigma))$: 
-    $x \in T[\Ocal(\tau, \sigma)]$. Then $T^{-1}(x) \in \Ocal(\tau, \sigma)$
-    $\tau$ is a proper prefix of $T^{-1}(x)$ and $\sigma$ is a proper suffix of $T^{-1}(x)$. 
-    $T(\tau)$ is a proper prefix/suffix of $x$ and $T(\sigma)$ is a proper suffix/prefix of
-    $x$. Also $|x| = |T^{-1}(x)| < |\tau| + |\sigma| = |T(\sigma)| + |T(\tau)|$
-    And so $x \in \Ocal(T(\tau), T(\sigma))$.
-\end{proof}
-
-\begin{corollary}
-    We see that since 
-    \[
-        \Omega(\sigma, \tau) = \sum_{\pi \in \Ocal(\sigma, \tau)} x^{|\pi|-|\sigma|}
-    \]
-    we have
-    \[
-        \Omega(T(\sigma), T(\tau)) = \Omega(\sigma, \tau)
-    \]
-    We can derive a number of rewrite systems $R_i$ from $J$. Each of them has a number of
-    symmetries one of whom we might be ablo to prove is terminating and confluent. Then we know that
-    certain rewrite system is terminating and confluent and can use its domain to enumerate the
-    equivalance classes $J$ induces.
-
-    and therefore $C_{T[J]} = C_J$ and the joint distribution are then the one and the same.
-    If we have $J$ and can derive a $C_J$ from it, then for every $T[J]$ we can
-    derive a $C_{T[J]}$ since $T[J]$ is terminating and confluent, and $C_J = C_{T[J]}$.
-\end{corollary}
 
 \clearpage
 

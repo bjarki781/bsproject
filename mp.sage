@@ -113,7 +113,7 @@ def generate_latex(seq_dict):
         for i, d in enumerate(seq_dict[e]):
             equivs, R, domain, clusters, _, _, index = d
 
-            print((equivs, list(seq)), file=fi)
+            print(clustergf, file=fi)
 
             if equivs == []:
                 print('\\textnormal{the identity equivalence}')

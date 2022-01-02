@@ -192,7 +192,7 @@ trm_cfl_systems =
   filter (isJust . snd)
   $ map (\(a, b) -> (a, doo b))
   $ map (\(a, b) -> (a, map make_system b))
-  $ map (\x -> (x,  get_all_turns x)) sym_partitions
+  $ map (\x -> (x,  [x])) sym_partitions
 
 main :: IO ()
 main = do
