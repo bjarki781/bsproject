@@ -561,8 +561,6 @@ permutations that avoid $\dom(R)$ with Claesson's method and get the joint distr
  
 \end{example}
 
-For the next example we also use symmetry.
-
 \begin{example}
 Let $J = \{ \{ 123, 132, 312 \}, \{ 231, 321 \} \}$ for which there is a overlap invariant, hence
 terminating, and confluent pattern-rewriting system
@@ -668,14 +666,6 @@ systems and calculating the generating functions and finding if their sequences
 were found in the OEIS, and finally tester which calculates the first 6 values
 of the sequences manually. mp and tester were written in Haskell and mp in Sage Math. 
 
-The program mp begins with calculating the symmetries of a given family of equivalences. Then if we
-find a terminating and confluent system for one symmetry we can use the same system for the other
-symmetries. For each symmetry we then generate disjoint systems which are then checked for overlap
-invariance. If a system is overlap invariant we try to make it confluent with the algorithm we
-introduced. If that all works then we have a confluent and terminating system and can go on using
-Claesson's method of finding the joint distribution.
-
-
 \section{Problems and questions}
 
 There are a few questions that are left unanswered by this paper.
@@ -685,10 +675,7 @@ still approxmimately 50 relations for which we have not found a corresponding Wi
 Not every relation has a corresponding overlap invariant system, but still have terminating and
 confluent systems. An example of those would be the relation induced by $\{ \{ 213, 132
 \} \}$. Its rewrite systems ${\{ 213 \patternrule 132 \}}$ and ${\{
-132 \patternrule 213 \}}$ are not overlap invariant. When we
-apply a symmetry from $D_4$ to it, we get $\{ \{ 312, 231 \} \}$ which has the same
-problem.
-
+132 \patternrule 213 \}}$ are not overlap invariant. 
 But for $\{ 213 \patternrule 132 \}$ sigma parameterized by $21$ is an increasing statistic. We
 should be able to find these sigma statistics parameterized by smaller patterns algorithmically.
 That should be possible by looking at all Hertzsprung patterns that appear in a left- and righthand

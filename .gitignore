@@ -6,8 +6,10 @@ tester
 *.aux
 *.log
 *.pdf
+*.dvi
 *.bbl
 *.spyx
 *.sage.py
 *.hi
 *.prof
+*.swp
