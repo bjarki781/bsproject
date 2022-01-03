@@ -34,27 +34,6 @@ partitions xs = map tail $ par xs
     bites [] = [[]]
     bites ys = nub $ map sort $ [y:p | y <- ys, p <- []:(bites $ delete y ys)]
 
--- these actions correspond to the core elements in the D_4, we can use them on
--- permutations by treating them as mesh patterns and applying elements to the
--- pattern
--- all elements in D_4
-actions :: [Perm -> Perm]
-actions = [id, actionH, actionV, actionR . actionH, actionR . actionV,
-            actionR, actionR . actionR, actionR . actionR . actionR]
-  where 
-    actionH perm = map (\i -> length perm - i + 1) perm
-    actionV = reverse
-    actionR perm = one_line perm [length perm, length perm - 1..1]
-    one_line xs ys = map snd $ sort (zip xs ys)
-
--- function to apply a given symmetry on a collection of equivalences
-apply_symmetry :: (Perm -> Perm) -> [Equivalence] -> [Equivalence]
-apply_symmetry action = map (nub . sort . map action) 
-
--- all possible symmetries of a collection of equivalence relation 
-get_all_turns :: [Equivalence] -> [[Equivalence]]
-get_all_turns equivs = map ($ equivs) $ map apply_symmetry actions 
-
 -- utility functions for finding clusters and applying rules
 -- might copy anders' algorithm applying rules though
 standard :: [Int] -> Perm
@@ -127,8 +106,8 @@ rule_check sys_image (t, r) = ekat m t == ekat m r
   where 
     m = maximum $ map (lenshr t) sys_image
 
-joininvariance_check :: System -> Bool
-joininvariance_check system = all (rule_check image) system
+overlinvariance_check :: System -> Bool
+overlinvariance_check system = all (rule_check image) system
   where
     image = filter ((==3) . length) $ img system
 
@@ -167,7 +146,7 @@ combos xss
     _combos xs = if any (==[]) xs then [] else [a:b | a <- head xs, b <- _combos (tail xs)]
 
 make_system :: [Equivalence] -> Maybe System
-make_system = make_confluent_system . filter joininvariance_check . make_rewrite_systems 
+make_system = make_confluent_system . filter overlinvariance_check . make_rewrite_systems 
 
 make_rewrite_systems :: [Equivalence] -> [System]
 make_rewrite_systems = map concat . combos . map make_single_image_systems 
@@ -176,28 +155,17 @@ make_single_image_systems :: Equivalence -> [System]
 make_single_image_systems eq = [[(domain, image) | domain <- delete image eq] | image <- eq]
 
 make_confluent_system :: [System] -> Maybe System
-make_confluent_system = listToMaybe . filter joininvariance_check . sortOn length . mapMaybe (\sys -> confluentize (img sys) sys)
+make_confluent_system = listToMaybe . filter overlinvariance_check . sortOn length . mapMaybe (\sys -> confluentize (img sys) sys)
 
 sym_partitions :: [[Equivalence]]
 sym_partitions = tail $ map (filter (\p -> length p > 1)) $ partitions $ sym 3
 
-doo :: [Maybe System] -> Maybe (System, Int)
-doo syss
-  | isNothing try_find = Nothing
-  | otherwise = Just (fromJust $ syss !! (fromJust try_find), fromJust try_find)
-  where try_find = findIndex isJust syss
-
-trm_cfl_systems :: [([Equivalence], Maybe (System, Int))]
-trm_cfl_systems = 
-  filter (isJust . snd)
-  $ map (\(a, b) -> (a, doo b))
-  $ map (\(a, b) -> (a, map make_system b))
-  $ map (\x -> (x,  [x])) sym_partitions
+trm_cfl_systems :: [([Equivalence], System)]
+trm_cfl_systems = ([], []):(mapMaybe (\p -> if make_system p == Nothing then Nothing else Just (p, fromJust $ make_system p)) sym_partitions)
 
 main :: IO ()
 main = do
-    let to_print = map (\(e, d) -> (e, fromJust d)) $ ([],Just ([], 0)): trm_cfl_systems 
     let findSystemClustersDict sys = [((p, q), c) | p <- dom sys, q <- dom sys, c <- findClusters p q, not $ null c]
 
-    mapM_ (\(e, (sys, i)) -> print (e, sys, dom sys, findSystemClustersDict sys, i)) to_print
+    mapM_ (\(p, sys) -> print (p, sys, dom sys, findSystemClustersDict sys)) trm_cfl_systems
 

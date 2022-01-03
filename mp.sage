@@ -75,8 +75,6 @@ def nub(seq):
     return [x for x in seq if not (x in seen or seen_add(x))]
 
 def generate_latex(seq_dict):
-    action_names = ['\\phantom{.}', 'H', 'V', 'D_1', 'D_2', 'R_{90}', 'R_{180}', 'R_{270}']
-               
     sys.stdout = open('appendix.tex', 'w')
     fi = open('appendix.raw', 'w')
     
@@ -87,7 +85,7 @@ def generate_latex(seq_dict):
         print('$$')
         print('\\begin{matrix}')
         exprs = []
-        for _, _, _, _, xclustergf, clustergf, _ in seq_dict[e]:
+        for _, _, _, _, xclustergf, clustergf in seq_dict[e]:
             exprs.append((xclustergf, clustergf))
 
         for xcgf, cgf in nub(exprs):
@@ -111,7 +109,7 @@ def generate_latex(seq_dict):
 
         print('\\begin{align}')
         for i, d in enumerate(seq_dict[e]):
-            equivs, R, domain, clusters, _, _, index = d
+            equivs, R, domain, clusters, _, _ = d
 
             print(clustergf, file=fi)
 
@@ -124,9 +122,6 @@ def generate_latex(seq_dict):
             
             print('&')
 
-            print(action_names[index])
-
-            print('&')
             print('\\begin{matrix}')
             print('\\\\'.join([show_rule(r) for r in R]))
             print('\\end{matrix}')
@@ -142,12 +137,12 @@ def generate_latex(seq_dict):
 master = {}
 for line in sys.stdin:
     t = eval(line)
-    equivs, system, domain, clusters, index = t
+    equivs, system, domain, clusters = t
     clustergf = C(domain, clusters)
     xclustergf = x + clustergf
 
     s = sequence(xclustergf, 8)
-    u = (equivs, system, domain, clusters, xclustergf, clustergf, index)
+    u = (equivs, system, domain, clusters, xclustergf, clustergf)
     if s not in master:
         master[s] = [u]
     else:
