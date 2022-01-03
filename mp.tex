@@ -95,7 +95,7 @@
     Hertzsprung patterns are permutation patterns in which both positions and values are required to
     be adjacent. A family of sets of Hertzsprung patterns induce equivalence classes by
     a pattern-replacement equivalence. In this paper we introduce a method that allows us 
-    to enumerate these equivalence classes for some families. We manage to find the joint
+    to automatically enumerate these equivalence classes for some families. We manage to find the joint
     distrubution of equivalence classes defined by a majority of the set partitions of $\Sym_3$.
 
     \breath \emph{Keywords}: permutation pattern, pattern-rewriting system
@@ -267,10 +267,7 @@ only one normal form.
     representatives for $S_n / \equiv_R$, the set of equivalence classes of $\equiv_R$.
 \end{corollary}
 
-It is easy to create confluent systems from terminating one but it is rather difficult to find
-terminating systems. Later in this paper we give a lemma that makes it easy to determine if a given
-system is terminating. We then show that it works for the majority of equivalence relations defined
-by partitions of $\Sym_3$.
+\subsection{Generating systems from a family of equivalences}
 
 We can generate rewrite systems from families of equivalences. Each pair $\{\alpha, \beta \}$ in the
 canonical form can either be made into the rule $\alpha \patternrule \beta$ or $\beta \patternrule
@@ -297,6 +294,11 @@ canonical form can either be made into the rule $\alpha \patternrule \beta$ or $
   $\{ \beta \patternrule \alpha, \gamma \patternrule \alpha \}$.
   They all share the property of having a single pattern in their image.
 \end{example}
+
+It is easy to create confluent systems from terminating one but it is rather difficult to find
+terminating systems. Later in this paper we give a lemma that makes it easy to proof that a certain
+type of system is terminating. We then show that these kinds of systems can be generated from  the
+majority of equivalence relations defined by partitions of $\Sym_3$.
 
 \subsection{Increasing statistics}
 It is rather difficult to determine if a system is terminating. Claesson introduced a method to
@@ -659,12 +661,13 @@ Thus, these partitions of $\Sym_3$ are split into three different types
 of Wilf-classes, which we can describe by $C'$, $C''$ and $C'''$ and the size
 of the partition.
 
-\subsection{Programming}
-There were three small programs written for the project: mp for generating the
-systems from the equivalence relations, mp for taking the domain of these
+\subsection{Implementation}
+There were three small programs written for the project: \verb|sysgen| for generating the
+systems from the equivalence relations, \verb|maketex| for taking the domain of these
 systems and calculating the generating functions and finding if their sequences
-were found in the OEIS, and finally tester which calculates the first 6 values
-of the sequences manually. mp and tester were written in Haskell and mp in Sage Math. 
+were found in the OEIS, and finally \verb|tester| which calculates the first 6 values
+of the sequences manually. \verb|sysgen| and \verb|tester| were written in Haskell and
+\verb|maketex| in the SageMath environment. 
 
 \section{Problems and questions}
 
