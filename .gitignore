@@ -1,5 +1,3 @@
-mp
-tester
 *.blg
 *.out
 *.o
@@ -13,3 +11,6 @@ tester
 *.hi
 *.prof
 *.swp
+eq185
+sysgen
+tester

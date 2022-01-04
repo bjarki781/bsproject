@@ -1,0 +1,742 @@
+\documentclass[a4paper, 11pt, english]{article}
+\usepackage[top=3.17cm, bottom=3.27cm, left=3.5cm, right=3.5cm]{geometry}
+%\setlength{\parindent}{2.5em}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+{\renewcommand{\arraystretch}{1.3}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{latexsym}
+\usepackage{amsmath,amsthm,amssymb,amsfonts}
+\usepackage{eucal}
+\usepackage[english]{babel}
+\usepackage{tikz}
+\usepackage{epsfig}
+\usepackage{amssymb, graphicx, amsmath, amsthm}
+\usepackage{calrsfs}
+\usepackage{todonotes}
+\usepackage[hidelinks]{hyperref}
+\usepackage{bm}
+\usepackage{appendix}
+\usepackage{multicol}
+\usepackage[useregional]{datetime2}
+\usepackage{listings}
+\usepackage{tikz-cd}
+
+\RequirePackage{graphicx}
+\RequirePackage{hyperref}
+\newcommand{\parm}{\mathord{\color{black!33}\bullet}}
+
+\newcommand{\breath}{\vspace{6pt plus 2pt minus 1pt}\noindent}
+
+\newcommand{\pattern}[4]{
+  \raisebox{0.6ex}{
+  \begin{tikzpicture}[scale=0.3, baseline=(current bounding box.center), #1]
+    \foreach \x/\y in {#4}
+      \fill[NE-lines] (\x,\y) rectangle +(1,1);
+    \draw (0.01,0.01) grid (#2+0.99,#2+0.99);
+    \foreach \x/\y in {#3}
+      \filldraw (\x,\y) circle (5pt);
+  \end{tikzpicture}}
+}
+
+\newcommand{\patternrule}{ \to \!}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{openproblem}[theorem]{Open Problem}
+\newtheorem*{openproblem*}{Open Problem}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem*{remark*}{Remark}
+\newtheorem{example}[theorem]{Example}
+\newtheorem*{example*}{Example}
+
+\newcommand{\eps}{\epsilon}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\ZZ}{\mathbb{Z}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\etal}{et~al.}
+\newcommand{\Sym}{S}
+\newcommand{\Pow}{\mathcal{P}}
+\newcommand{\Ocal}{\mathcal{O}}
+\newcommand{\emptyword}{\varepsilon}
+\newcommand{\id}{\mathrm{id}}
+\newcommand{\rid}{\overline{\id}}
+\newcommand{\from}{\leftarrow}
+\newcommand{\eq}{\leftrightarrow}
+\newcommand{\eqstar}{\stackrel{*}{\leftrightarrow}}
+\newcommand{\tostar}{\stackrel{*}{\to}}
+\newcommand{\toplus}{\stackrel{+}{\to}}
+\newcommand{\fromstar}{\stackrel{*}{\from}}
+\newcommand{\nf}[1]{{#1\!\downarrow}}
+\newcommand{\floor}[1]{\lfloor#1\rfloor}
+\newcommand{\bracket}[1]{[\mskip1mu #1\mskip1mu]}
+\DeclareMathOperator{\olap}{\mathcal{O}}
+\DeclareMathOperator{\dom}{dom}
+\DeclareMathOperator{\img}{img}
+\DeclareMathOperator{\des}{des}
+\DeclareMathOperator{\maj}{maj}
+\DeclareMathOperator{\ovl}{ovl}
+
+\begin{document}
+
+\title{Enumerating Hertzsprung equivalence classes defined by partitions of the symmetric group of degree 3}
+\author{Bjarki Hartjenstein Gunnarsson}
+\date{\today}
+\maketitle
+
+\begin{abstract}
+    Hertzsprung patterns are permutation patterns in which both positions and values are required to
+    be adjacent. A family of sets of Hertzsprung patterns induce equivalence classes by
+    a pattern-replacement equivalence. In this paper we introduce a method that allows us 
+    to automatically enumerate these equivalence classes for some families. We manage to find the joint
+    distrubution of equivalence classes defined by a majority of the set partitions of $\Sym_3$.
+
+    \breath \emph{Keywords}: permutation pattern, pattern-rewriting system
+\end{abstract}
+
+\section{Introduction}
+Permutation patterns are sub-permutations which we can match with parts of other
+permutations, under various constrains. 
+Classical permutation patterns do not have any constraints on their matches but they can
+be constrained such that the positions or values of the matches must be adjacent.
+Hertzsprung patterns constrain both positions and values to be adjacent. 
+
+%%% skip mentioning mesh patterns altogether?
+These constraints can be formalized by mesh patterns \cite{claesson:2011}.
+
+In this demonstration we make pattern matches bold.  Let us treat $132$ as a classical
+pattern, then we would have the following matches in the permutation $15432$.
+\[
+    \bm{154}32
+\]
+\[
+    \bm{1}54\bm{32}
+\]
+If we look again at the same pattern and permutation, but assume that the
+pattern match is constrained so that positions must be adjacent then we have the match
+\[
+    \bm{154}32.
+\]
+Again, looking at at the same pattern and permutation, but assuming that the
+pattern is constrained so that the values must be adjacent we have the following
+match:
+\[
+    \bm{1}54\bm{32}.
+\]
+
+Hertzsprung patterns constrain the match so both values and positions must be
+adjacent. The example permutation above avoids the Hertzsprung pattern $132$, that is, it does not have a match
+within the permutation. But as a showcase, given the pattern $132$ and the permutation $1243$ we
+have the Hertzsprung match
+\[
+    1\bm{243}.
+\]
+
+From this point onward, whenever we mention patterns we are referring to
+Hertzsprung patterns.
+
+Finally, a Hertzsprung pattern that matches the beginning of a permutation is
+called the (Hertzsprung) \emph{prefix} of that permutations. In a similar way, a pattern
+that matches the end of a permutation we call a (Hertzsprung) \emph{suffix}.
+
+\subsection{Equivalences, equivalence classes and motivation}
+We can define an equivalence relation using patterns. For a permutation with a certain pattern
+match, we can look at a transposition of that pattern match into another pattern will result in an
+equivalent permutation. 
+
+Say we consider $123$ and $321$ being equivalent. Then given the
+permutation with a pattern match $123$ marked in bold:
+\[
+  5\bm{234}1
+\]
+we rearrange the match into the equivalent pattern $321$ and get
+\[
+  5\bm{432}1.
+\]
+As a consequence of the patterns $123$ and $321$ being equivalent the permutations $52341$ and
+$54321$ land in the same equivalence class. That is, the two permutations are equivalent up to the
+\emph{pattern-replacement equivalence} induced by the equivalence of $123$ and $321$.
+
+We put patterns that can replace each other into sets, and then collect those sets together. 
+\[
+    \{ \{\alpha, \beta, \gamma, \dots \}, \{\lambda, \mu, \nu, \dots \}, \dots
+    \}.
+\]
+and we have what we call in this paper a family of equivalences.
+
+The collection of sets above is a shorthand for
+\[
+    \{ \{ \alpha, \beta \}, \{ \alpha, \gamma \}, \dots, \{ \lambda, \mu \}, \{
+        \lambda, \nu \}, \dots \}
+\] 
+which we call the canonical form. The shorthand notation is equivalent to the canonical form since
+we are working with equivalence relations and they are transitive.
+That is, we can replace the pattern $\beta$ with $\alpha$ and then $\alpha$ with $\gamma$, for
+example, to get that $\beta$ and $\gamma$ are in the same equivalence class.
+
+Note that there are sometimes more than one different canonical forms for a family of sets. For each 
+set of equivalent patterns we can choose one common member. Then we create pairs of that common
+element and every other element. In the example above we choose $\alpha$ and $\lambda$ as the common members
+but they could be any other member of the respective sets.
+
+Again, a collection of sets of equivalent patterns induces a pattern-replacement equivalence.
+To put it in more formal language, a family of equivalences $J$ will induce an equivalence relation
+which we call $\equiv_J$. We say $u \pi v \equiv_J u \rho v$ if $\{ \pi, \rho \} \in J$, with $u,v
+\in \Sym$.
+
+For example, if we say $J = \{ \{ 132, 321 \} \}$ then we consider the patterns $132$ and $321$ to
+be equivalent by the relation $\equiv_J$. That will e.g. result in
+\[
+    1\bm{243}5 \equiv_J 1\bm{432}5
+\]
+or
+\[
+  \bm{132}4\bm{765} \equiv_J \bm{321}4\bm{576}
+\]
+
+An equivalence relation on $\Sym = \cup_{n \geq 1} \Sym_n$ splits each $\Sym_n$
+into a set of equivalence classes which we want to enumerate. 
+
+Linton et al. has already made some headway on enumerating equivalence classes of patterns that constrain
+positions to be adjacent on one hand, and patterns that constrain values be adjacent on the other.
+Not much work had been done on enumerating equivalence classes of patterns that constrain both
+positions and values, Hertzsprung patterns, until the spring of 2021 when Claesson published a
+preprint of his article \cite{claesson:2021} that gives a semi-automatic way of enumerating equivalence classes of the
+last type.
+
+To enumerate these different equivalence classes we will introduce Claesson's 
+pattern-rewriting systems. They are the only part of the method given by Claesson that requires
+some manual work. The work involves finding systems that fulfil a certain property, namely
+\emph{termination}.
+
+\subsection{Pattern-rewriting systems}
+A \emph{pattern-rewriting system} is a subset $R \subset \cup_{n} (\Sym_n \times \Sym_n)$.
+We use the notation $\pi \patternrule \rho$ for $(\pi, \rho)$ when referring
+to elements of a pattern-rewriting system $R$.
+
+Juxtaposition of permutations signifies a direct sum. If $\pi=123$ and
+$\tau=321$ then $\pi\tau=123654$. The left argument is left unchanged while the
+digits of the right one are incremented by the length of the left argument.
+
+As for variable naming, we use the variables $a$ and $b$ for whole permutations, 
+the variables $\pi$, $\rho$, $\tau$ and $\sigma$ for patterns.
+Finally we use the variables $u$ and $v$ for sub-permutations, permutations that make up larger
+permutations.
+
+We can make a pattern-rewriting system induce a \emph{rewrite relation} on $\Sym$ in the following way: We say
+$a \to_R b$ for $a, b \in \Sym_k$ if there exists $\pi \patternrule \rho \in R$ so
+we can write $a = u \pi v$ and $b = u \rho v$, where
+$u$ and $v$ are in $\Sym$. Note that the relation is
+length-preserving. For example, if $R = \{123 \patternrule 321\}$, then $1234 \to_R 3214$. 
+
+We denote the domain of $R$ by $\dom(R) = \{\pi : \pi \patternrule
+\rho \in R\}$. For the image of $R$ we write $\img(R) = \{\rho : \pi
+\patternrule \rho \in R\}$. We write the reflexive transitive closure of
+$\to_R$ as $\tostar_R$. 
+
+An element $x$ in $\Sym$ is said to be in \emph{normal form} under the relation $\to_R$
+if there is no $y \in \Sym$ so that $x \to_R y$. A relation $\to_R$ is said to be
+\emph{terminating} if there exist no infinite chains $x_0 \to_R x_1 \to_R \cdots$. If
+$\to_R$ is terminating then every element has at least one normal form. 
+
+We say a relation is \emph{confluent} if and only if
+$$
+    y_1 \fromstar x \tostar y_2 \Longrightarrow 
+    \exists z. \  y_1 \tostar z \fromstar y_2.
+$$
+Intuitively, if $\to_R$ is confluent, it implies that every path we can
+take using $\to_R$, from a given permutation, will end up in the same place. 
+
+If a system is both terminating and confluent, then every element has a one and
+only one normal form.
+
+\begin{corollary}
+    If $R$ is a terminating and confluent pattern-rewriting system, then the set of
+    $\dom(R)$-avoiding permutations in $S_n$, which we also write $S_n(\dom(R))$, is a complete set of
+    representatives for $S_n / \equiv_R$, the set of equivalence classes of $\equiv_R$.
+\end{corollary}
+
+As a sidenote, we can look at the terminating and confluent relation $\to_R$ as a function 
+$N : \Sym \to \Sym$ with $N(x)$ being the unique normal form of the permutation $x$.
+
+\subsection{Generating systems from a family of equivalences}
+
+We can generate rewrite systems from families of equivalences. Our criteria for a pattern-rewriting
+system $R$ generated from a family $J$ is that the equivalence closure of $R$ is equal to the
+equivalence relation generated by $J$. 
+Practically, each pair $\{\alpha, \beta \}$ in the canonical form can either be made into the rule $\alpha
+\patternrule \beta$ or $\beta \patternrule \alpha$. The number of different rewrite systems we can
+generate from $J$ is $2^{|J|}$.
+
+\begin{definition}
+  We say a pattern-rewriting system $R$ is \emph{disjoint} if $\dom(R) \cap \img(R) = \emptyset$.
+\end{definition}
+
+\begin{example}
+  The pattern equivalence $\{ \alpha, \beta \}$ induces an equivalence relation.
+  That equivalence relation is equal to the equivalence closure of two different pattern-rewriting
+  relations: The relation induced by $\{ \alpha \patternrule \beta \}$ or the relation induced by
+  $\{ \beta \patternrule \alpha \}$. Both systems are disjoint.
+
+  The pattern equivalence $\{ \alpha, \beta, \gamma \}$ also induces an equivalence relation.
+  That equivalence relation induced by this set of interchangable patterns is equal to the
+  equivalence closure of six different pattern-rewriting
+  relations: The relation induced by $\{ \alpha \patternrule \beta, \beta \patternrule \gamma \}$,
+  $\{ \alpha \patternrule \beta, \alpha \patternrule \gamma \}$, etc. We see that the first example is
+  not disjoint while the second one is. If we only look at disjoint systems then we get
+  $\{ \alpha \patternrule \gamma, \beta \patternrule \gamma \}$,
+  $\{ \alpha \patternrule \beta, \gamma \patternrule \beta \}$,
+  $\{ \beta \patternrule \alpha, \gamma \patternrule \alpha \}$.
+  They all share the property of having a single pattern in their image.
+\end{example}
+
+It is easy to create confluent systems from terminating one but it is rather difficult to find
+terminating systems. Later in this paper we give a lemma that makes it easy to proof that a certain
+type of system is terminating. We then show that these kinds of systems can be generated from  the
+majority of equivalence relations defined by partitions of $\Sym_3$.
+
+\subsection{Increasing statistics}
+It is rather difficult to determine if a system is terminating. Claesson introduced a method to
+do so involving \emph{increasing statistics}.
+A \emph{statistic} is any function $f : \Sym \to \mathbb{N}$. We call $f$ an increasing
+statistic with respect to $R$ if $a \to_R b$ implies that $f(a) < f(b)$.
+
+\begin{lemma}
+    Let $R$ be a pattern-rewriting system. If there exists an increasing
+    statistic with respect to $R$, then $\to_R$ is terminating.    
+\end{lemma}
+
+\begin{definition}
+    Let the statistic $\Sigma_\tau(a)$ be the sum of the positions of occurrences of
+    the pattern $\tau$ in the permutation $a$. We call this statistic the sigma statistic
+    parameterized by the pattern $\tau$.
+    \cite{claesson:2021}.
+\end{definition}
+
+Let's take one example from Claesson's paper.
+\begin{example}
+    Let's look at the equivalence $\{ \{ 12, 21 \} \}$. We can select the system $\{
+        21 \to 12 \}$. This relation induced by the system is terminating since the statistic
+    $\Sigma_{12}$ is increasing on the relation. It's not
+    confluent though, since $321 \to 231$ and $321 \to 312$. So we add the rule
+    $231 \patternrule 312$ to the system. The relation is still terminating and by Lemma
+    3.3 in Claesson's paper we also have a confluent system. We then end up with
+    the system 
+    \[
+        \{ 21 \patternrule 12, 231 \patternrule 312 \}
+    \]
+    which is the result we are focusing on in this article.
+
+    By his machinery we find that 
+    \[
+        \sum_{n \geq 1} \Sym_n(21, 231) = \sum_{m \geq 0} m!(x-x^2)^m
+    \]
+    which is the joint distribution of the equivalence classes defined by 
+    $\{ \{ 12, 21 \} \}$, as shown by Stanley \cite{stanley:2012}.
+\end{example}
+
+We will look more at increasing statistics and show that if systems fulfil a certain property called
+\emph{overlap invariance} then they are terminating due to a certain increasing statistic.
+
+\section{Finding terminating and confluent systems}
+Claesson only found systems corresponding to equivalence relations induced by a
+single set of equivalent patterns. We introduce a new type of statistic which can determine the
+termination of rewriting systems generated from families with multiple equivalences.
+
+\subsection{Overlap invariance}
+Let us begin by generalizing the sigma statistic Claesson introduced in his paper.
+\begin{definition}
+    A sigma statistic parameterized by a set of patterns $\Pi$ is defined as
+    $$
+        \Sigma_\Pi = \sum_{\pi \in \Pi} \Sigma_{\pi}.
+    $$
+\end{definition}
+alongside reiterating the definition of $\Ocal$:
+\begin{definition}
+    For $\sigma, \tau \in T$ define the set of permutations $\Ocal(\sigma,
+    \tau)$ by stipulating that $\pi \in \Ocal(\sigma, \tau)$ if and only if
+    \begin{enumerate}
+    \item $\sigma$ is a proper prefix of $\pi$,
+    \item $\tau$ is a proper suffix of $\pi$ and
+    \item $|\pi| < |\sigma| + |\tau|$.
+    \end{enumerate}
+    In this paper we call the elements of $\Ocal(\sigma, \tau)$ the clusters of $\sigma$ and $\tau$.
+    If the set $\Ocal(\sigma, \tau)$ is non-empty, we say $\sigma$ and $\tau$ \emph{cluster}.
+\end{definition}
+
+Then, we will define a cluster \emph{overlap} and the function $\ovl$.
+\begin{definition}
+  When two patterns or permutations cluster we call the bit they share their \emph{overlap}.
+  For permutations $a$ and $b$, we define $\ovl(a,b)$ as the maximum length of their overlaps if they 
+  cluster. If they do not cluster then we set $\ovl(a,b)=0$, the length of their overlap is zero.
+
+  For example $\ovl(213, 123) = 1$ since $\Ocal(213, 123) = \{ 21\underline{3}45 \}$. For $\ovl(123, 123) = 2$
+  because $\Ocal(123, 123) = \left\{ 1\underline{23}4, 12\underline{3}45 \right\}$. Finally
+  $\ovl(123, 321)=0$ since $123$ and $321$ do not cluster.
+\end{definition}
+
+We can then define \emph{overlap invariance}.
+\begin{definition}
+    Let $R$ be a pattern-rewriting system with rules of length $n$. If
+    \[
+        \pi_j = \rho_j, n-m \leq j \leq n \  \textnormal{where}
+        \ m = \max\nolimits_{\tau \in \img(R)} \ovl(\pi, \tau)
+    \]
+    for each $\pi \patternrule \rho \in R$ then we say the system is \emph{overlap invariant}.
+\end{definition}
+
+The term overlap invariance refers to the fact that if a domain of a rule in the system clusters
+with some pattern in the image of the system, then that rule does not alter the overlap. That
+specific type of pattern overlap is invariant.
+
+\begin{example}
+  The system
+  \begin{align*}
+    (1) 123 \patternrule 213 \\
+    (2) 312 \patternrule 132
+  \end{align*}
+  is overlap invariant. The left hand side of (1) clusters with the right hand side of (2) and 
+  $123_3 = 213_3$. The left hand side of (2) clusters with neither 213 nor 132.
+
+  We see that we call a system overlap invariant since if we apply a rule on a domain pattern that clusters
+  with an image pattern to its right, then we do not alter the overlap of the two patterns.
+  Therefore the image pattern to the right stays the same and clusters with a new image pattern.
+  
+  Let us look at the following permutation, which has the occurrences of $\img(R)$ marked bold and
+  occurrences of $\dom(R)$ underlined.
+  \[
+    \underline{12\bm{3}}\bm{54}
+  \]
+  We apply the rule $123 \patternrule 213$ to get the permutation
+  \[
+    \bm{21\bm{3}}\bm{54}
+  \]
+  Since the system is overlap invariant the occurrence of the pattern 132 was left unchanged while
+  an occurrence of 213 was added.
+\end{example}
+
+This leads us to a new lemma:
+
+\begin{lemma}
+  If $R$ is overlap invariant and disjoint then $\Sigma_{\img(R)}$ is an increasing statistic with respect to $R$. 
+\end{lemma}
+\begin{proof}
+  Since the system is disjoint there is no rule $a \patternrule b$ in $R$ with $a, b \in \img(R)$.
+  That rule would not move an image pattern to the right, just replace it with another one, which is
+  not enough to increase the statistic value of the resulting permutation.
+
+    Let $a \to_R b$. Then there is a rule $\pi \patternrule \rho$ in
+    $R$ so that $u \pi v \to_R u \rho v$, where $a = u \pi v$ and $b =
+    u \rho v$. 
+
+    If elements of $\img(R)$ is fully contained in either $u$ or $v$ then we
+    can safely ignore them. If an element appears in $u\pi$, at the end of $u$ and the beginning of
+    $\pi$ then $u \rho$ will have a higher sigma value since the position of a pattern in $\img(R)$ will
+    effectively move to the right. If an element appears in $\pi v$,
+    then by overlap invariance it will also appear in $\rho v$.
+    So
+    \[
+        \Sigma_{\img(R)}(a) < \Sigma_{\img(R)}(b)
+    \]
+
+\end{proof}
+
+And since an increasing statistic under a system $R$ implies termination of the rewrite relation
+induced by $R$ then we have as a corollary:
+
+\begin{corollary}
+    Let $R$ be overlap invariant and disjoint. Then $R$ induces a terminating pattern-rewriting relation.
+\end{corollary}
+
+\subsection{Making a terminating system confluent}
+Lemma $3.3$ in Claesson's paper gives us a convenient test to tell whether a system is
+confluent. 
+
+What we need to show is a system is locally confluent, that is
+\begin{lemma}[Lemma 3.3 \cite{claesson:2021}]
+    Let $R$ be a terminating pattern rewriting system. Let 
+    \begin{equation*}
+        \Ocal(R) = \cup_{\pi_1, \pi_2} \Ocal(\pi_1, \pi_2),
+    \end{equation*}
+    where the union is over all pairs $(\pi_1, \pi_2) \in \dom(R) \times \dom(R)$. If, for all
+    $\pi \in \Ocal(R)$,
+    \begin{equation*}
+        \rho_1 \from \pi \to \rho_2 \Longrightarrow \exists \sigma. \rho_1 \fromstar \sigma \tostar
+        \rho_2,
+    \end{equation*}
+    then $\to_R$ is confluent.
+        
+\end{lemma}
+
+Using this test and a method for adding rules we devise an algorithm. The method we are using is the
+naive one: We find shortest cluster of the domain of the terminating system that has more than two
+normal forms under the system. Then we add a rule that maps one normal form into another, making
+sure that the result $y$ of applying the rule to a permutation $x$ will result in $\Sigma(x) <
+\Sigma(y)$.
+
+Below is pseudocode for the algorithm.
+
+\lstset{basicstyle=\footnotesize\ttfamily, frame=single, breaklines=true,
+mathescape=true}
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[title={Algorithm 1}]
+confluentize(sys):
+    in: a terminating system, sys
+        increasing statistic that proves termination of sys, f
+    out: a terminating and confluent system or failure
+
+    if sys is confluent then
+        return sys
+
+    s := choose shortest cluster in O(R) with more than one normal form
+    rules := { a -> b | a, b are normal forms of s, f(b) - f(a) > 0 }
+
+    if rules = $\emptyset$ then
+        return failure
+
+    rule := rule@(a -> b) from rules chosen by the maximum f(b) - f(a) value
+
+    return algo(sys + rule)
+\end{lstlisting}
+\end{minipage}
+
+Let us try to demonstrate that these added rules which make the system confluent do
+not make the system non-terminating.
+ 
+We have to make sure that application of a rule to a permutation $x$ must either add occurrences of $\img(R)$, move them
+to the right while not ruining occurrences of any of the images present in $x$.
+
+Let us draw up a general scenario with $\rho$ being some occurrences of the image of the system and
+$\pi$ being the representing domain. Juxtaposition of two of these placeholders represents that they
+cluster.
+\[
+\begin{tikzcd}  
+    & \bm{\rho}\mathbf{\pi\pi}\bm{\rho} \arrow[dl] \arrow[dr] & \\
+    \rho\underline{\mathbf{\rho}\mathrm{\pi}}\bm{\rho} \arrow[bend
+    right=30, mapsto]{rr} & & \bm{\rho}\underline{\mathrm{\pi}\mathbf{\rho}}\bm{\rho}
+\end{tikzcd}
+\]
+
+The top node, $\pi\pi$, is the general form of a permutation that has more than two normal forms in
+a non-confluent system. We can either apply a rule to the first or second pi and get two different
+permutations. These are represented by the lower two nodes.
+
+Here img represents a pattern in the image of a system, and dom a pattern in the domain of a system.
+If either is bold then that means that it is an actual occurrence of the pattern but if it is not
+then the occurrence has been ruined by an application of a rule from the system. The italicized
+img's at the beginning and the end of the pattern represent possible occurrences of img around the
+pattern, just to show that they are not ruined either when applying this new rule.
+
+%%% fixit
+By casual induction we see that even if we take domain from the confluence rules
+then they will also be overlap invariant.
+
+We see that the system is still terminating under the original $\img(R)$ as
+that a confluence rule is also overlap invariant under $\img(R)$.
+
+\subsection{Examples}
+To illustrate the utility of the methods we have introduced we will look at two
+examples
+
+\begin{example}
+Let $J=\{\{ 132, 312 \}, \{ 213, 231, 321 \}\}$. This family can generate 6
+different disjoint rewrite systems. We test each one for overlap invariance and one that
+matches is 
+\[
+    \begin{matrix}
+        123 \patternrule 312 \\
+        132 \patternrule 312 \\
+        231 \patternrule 321 \\
+    \end{matrix}
+\]
+We then run our confluentzation algorithm on this terminating system
+and get the system
+\[
+    \begin{matrix}
+        123 \patternrule 312 \\
+        132 \patternrule 312 \\
+        231 \patternrule 321 \\
+        3124 \patternrule 1423 \\
+        31254 \patternrule 12534
+    \end{matrix}
+\]
+This system is both confluent and terminating, which is our end goal.
+With that kind of system $R$ we can go on enumerating
+permutations that avoid $\dom(R)$ with Claesson's method and get the joint distribution
+\[
+  \sum_{m \geq 0} m! (-3x^3 + x)^m.
+\]
+ 
+\end{example}
+
+\begin{example}
+Let $J = \{ \{ 123, 132, 312 \}, \{ 231, 321 \} \}$ for which there is a overlap invariant, hence
+terminating, and confluent pattern-rewriting system
+\[
+    \begin{matrix}
+        123 \patternrule 312 \\
+        132 \patternrule 312 \\
+        231 \patternrule 321 \\
+        3124 \patternrule 1423 \\
+        31254 \patternrule 12534
+    \end{matrix}
+\]
+Then the joint distribution is
+\[
+  \sum_{m \geq 0} m! (-3x^3 + x)^m.
+\]
+
+\end{example}
+
+\section{Overview of results}
+We can apply the above mentioned results by testing all disjoint rewrite systems of a
+family of equivalences for overlap invariance. If it is overlap invariant then it is terminating and
+we can make it both terminating and confluent system by adding some rules.
+
+We can look at a set partition as a set of disjoint sets, therefore a set partition of a set of
+patterns is a set of disjoint sets of patterns, which is the same as a family of
+equivalences.
+
+For example, let us look at one set partition of $\Sym_3$, namely 
+\[
+  \left\{ \left\{ 123, 132 \right\}, \left\{ 213 \right\}, \left\{ 231, 312 \right\}, \left\{ 321
+  \right\} \right\}.
+\]
+We can ignore the singleton sets, they simply represent that its member is equivalent to itself. We
+then get the family of equivalences
+\[
+  \left\{ \left\{ 123, 132 \right\}, \left\{ 231, 312 \right\} \right\}.
+\]
+
+
+To test the efficacy of the overlap invariance idea we look at every set partition of 
+\[
+  \Sym_3 = \left\{ 123, 132, 213, 231, 312, 321 \right\}.
+\]
+Those are 203, of those are 155 families of equivalences from which we can derive overlap
+invariant systems.
+Calculating the joint distribution of those systems gives us nine different Wilf classes.
+
+\begin{definition}
+    We can give a family of equivalences $J$ a size function which is the same
+    as the cardinality of a canonical form of the set of equivalences.
+
+    By this definition 
+    \begin{align*}
+      & | \{ \{ 123, 321 \}, \{ 312, 231, 213 \} \}| =  \\
+      & | \{ \{ 123, 321 \}, \{ 312, 231 \}, \{ 312, 213 \} \} | =  3
+    \end{align*}
+\end{definition}
+
+Let us collate all the results from Appendix B into a table to show how the
+different generating functions are distributed.
+
+The joint distribution is always on the form $\sum_{m \geq 0}m!(x+C_J(x))^m$ where $C$
+is the cluster generating function corresponding to the system $J$.
+
+\begin{center}
+\begin{tabular}{c|c|c|c}
+    $|J|$ & $C_J(x)$ & count & OEIS seq. \\
+    \hline
+    0 & $0$ & 1 & A000142 \\
+    1 & $-x^3$ & 13 & A212580 \\
+    2 & $-2x^3$ & 46 & A212432 \\
+    2 & $\frac{-x^3-x^4}{x^2+x+1}$ & 2 & A212581 \\
+    3 & $-3x^3$ & 45 & \emph{Not present} \\
+    3 & $\frac{-2x^3-2x^4-x^5}{x^2+x+1}$ & 10 & A212433 \\
+    4 & $-4x^3$ & 4 & \emph{Not present} \\
+    4 & $\frac{-4x^3-3x^4-2x^5}{x^2+x+1}$ & 4 & \emph{Not present}\\
+    4 & $\frac{-4x^3-2x^4}{x^2+x+1}$ & 1 & \emph{Not present} \\ 
+    \hline
+    \hline
+    5 & $\frac{-5x^3-3x^4-x^5}{x^2+x+1}$ & 1 & \emph{Not present} \\ 
+\end{tabular}
+\end{center}
+
+If we parameterize each $C_J$ with it's corresponding $|J|$ value then we have
+three different types of cluster generating functions.
+
+Those types are $C'_J(x) = -|J|x^3$, $C''_J(x) = \frac{-|J|x^3-(|J|-1)x^4-(|J|-2)x^5}{x^2+x+1}$
+and $C'''_J(x) = \frac{-|J|x^3-(|J|-2)x^4-(|J|-4)x^5}{x^2+x+1}$
+
+For $C'''$ we only generated one system whereas Claesson had generated a system for
+$J = \{\{ 123, 132, 213, 231, 312, 321 \}\}$ which cluster generating function
+is also $C'''_J$. We include it in our table to show that a pattern holds.
+
+Thus, these partitions of $\Sym_3$ are split into three different types
+of Wilf-classes, which we can describe by $C'$, $C''$ and $C'''$ and the size
+of the partition.
+
+\subsection{Implementation}
+There were three small programs \cite{hartjenstein:2021} written for the project: \verb|sysgen| for generating the
+systems from the equivalence relations, \verb|maketex| for taking the domain of these
+systems and calculating the generating functions and finding if their sequences
+were found in the OEIS, and finally \verb|tester| which calculates the first 6 values
+of the sequences manually. \verb|sysgen| and \verb|tester| were written in Haskell and
+\verb|maketex| in the SageMath environment. 
+
+\section{Problems and questions}
+
+There are a few questions that are left unanswered by this paper.
+Are there any other Wilf classes that appear for relations defined by partitions on $\Sym_3$? There are
+still approxmimately 50 relations for which we have not found a corresponding Wilf class. 
+
+Not every relation has a corresponding overlap invariant system, but still have terminating and
+confluent systems. An example of those would be the relation induced by $\{ \{ 213, 132
+\} \}$. Its rewrite systems ${\{ 213 \patternrule 132 \}}$ and ${\{
+132 \patternrule 213 \}}$ are not overlap invariant. 
+But for $\{ 213 \patternrule 132 \}$ sigma parameterized by $21$ is an increasing statistic. We
+should be able to find these sigma statistics parameterized by smaller patterns algorithmically.
+That should be possible by looking at all Hertzsprung patterns that appear in a left- and righthand
+side of a rule. Then you can tally if a patterns either appears, disappears or moves when applying the rule.
+
+There are also some questions that arise regarding the relation between a family of equivalences $J$ and
+the cluster generating function $C_J$.
+Would similar formulas to $C', C''$ and $C'''$ appear when we would
+generate systems from partitions of $\Sym_4$? 
+Or more generally, 
+can we derive a way to create a cluster generating function directly from a
+given family of equivalences? 
+
+On a seperate note,
+is there an algorithm that makes all systems confluent?
+
+Let us end with one conjecture and one open problem:
+\begin{conjecture}
+    If a partition $J$ on $\Sym_n$ has a system that has no non-self-clusters in
+    its domain then its cluster generating function is $x^n-|J|x$.
+\end{conjecture}
+
+\begin{openproblem}
+    Find a terminating statistic for the rest of the equivalence relations
+    defined by partitions of $\Sym_3$.
+\end{openproblem}
+
+\section*{Acknowledgments}
+
+\bibliographystyle{plain}
+\bibliography{thesis}
+
+\clearpage
+
+\begin{appendices}
+
+\clearpage
+
+\newgeometry{left=2cm,right=2cm,top=2cm,bottom=2cm}
+\section{Resulting systems}
+We categorize the equivalence families/equivalence relations by what their joint
+distribution is.
+\begin{multicols}{2}
+\include{appendix}
+\end{multicols}
+\end{appendices}
+
+\end{document}
