@@ -76,7 +76,7 @@ def nub(seq):
 
 def generate_latex(seq_dict):
     sys.stdout = open('appendix.tex', 'w')
-    fi = open('appendix.raw', 'w')
+    rawfile = open('appendix.raw', 'w')
     
     print('\\allowdisplaybreaks')
     print('\\begin{tiny}')
@@ -111,7 +111,7 @@ def generate_latex(seq_dict):
         for i, d in enumerate(seq_dict[e]):
             equivs, R, domain, clusters, _, _ = d
 
-            print(clustergf, file=fi)
+            print((equivs, list(seq)), file=rawfile)
 
             if equivs == []:
                 print('\\textnormal{the identity equivalence}')

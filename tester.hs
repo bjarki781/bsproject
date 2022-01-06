@@ -25,12 +25,14 @@ partitions xs = map tail $ par xs
           bites [] = [[]]
           bites ys = nub $ map sort $ [y:p | y <- ys, p <- []:(bites $ delete y ys)]
 
-verify :: ([Equivalence], [Int]) -> ([Equivalence], Bool)
-verify (equivs, sequence) = (equivs, test 6 equivs == (take 6 sequence))
+verify :: ([Equivalence], [Int]) -> Bool
+verify (equivs, sequence) = test 6 equivs == (take 6 sequence)
 
 main = do
     txt <- readFile "appendix.raw" 
-    mapM_ (print . verify . read) $ lines txt
+    let ok = all (verify . read) $ lines txt
+
+    putStrLn (if ok then "OK!" else "Not OK!")
 
 tester = map (\eqs -> (eqs, test 6 eqs)) $ map (filter (\p -> length p > 1)) $ partitions $ sym 3
 
