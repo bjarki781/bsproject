@@ -22,6 +22,7 @@
 \usepackage[useregional]{datetime2}
 \usepackage{listings}
 \usepackage{tikz-cd}
+\usepackage{caption}
 
 \RequirePackage{graphicx}
 \RequirePackage{hyperref}
@@ -110,12 +111,12 @@ Hertzsprung patterns constrain both positions and values to be adjacent.
 These constraints can be formalized by mesh patterns \cite{claesson:2011}.
 
 In this demonstration we make pattern matches bold.  Let us treat $132$ as a classical
-pattern, then we would have the following matches in the permutation $15432$.
+pattern, then we would have the following matches in the permutation $15432$:
 \[
     \bm{154}32
 \]
 \[
-    \bm{1}54\bm{32}
+    \bm{1}54\bm{32}.
 \]
 If we look again at the same pattern and permutation, but assume that the
 pattern match is constrained so that positions must be adjacent then we have the match
@@ -150,9 +151,9 @@ match, we can look at a transposition of that pattern match into another pattern
 equivalent permutation. 
 
 Say we consider $123$ and $321$ to be equivalent. Then given the
-permutation with a pattern match $123$ marked in bold:
+permutation with a pattern match $123$ marked in bold,
 \[
-  5\bm{234}1
+  5\bm{234}1,
 \]
 we rearrange the match into the equivalent pattern $321$ and get
 \[
@@ -172,7 +173,7 @@ and we have what we call in this paper a family of equivalences.
 The collection of sets above is a shorthand for
 \[
     \{ \{ \alpha, \beta \}, \{ \alpha, \gamma \}, \dots, \{ \lambda, \mu \}, \{
-        \lambda, \nu \}, \dots \}
+        \lambda, \nu \}, \dots \},
 \] 
 which we call the canonical form. The shorthand notation is equivalent to the canonical form since
 we are working with equivalence relations and they are transitive.
@@ -200,7 +201,7 @@ be equivalent by the relation $\equiv_J$. That will e.g. result in
 \]
 or
 \[
-  \bm{132}4\bm{765} \equiv_J \bm{321}4\bm{576}
+  \bm{132}4\bm{765} \equiv_J \bm{321}4\bm{576}.
 \]
 
 An equivalence relation on $\Sym = \bigcup_{n \geq 1} \Sym_n$ splits each $\Sym_n$
@@ -278,7 +279,10 @@ Practically, we generate a system from a family of equivalences by taking each p
 \alpha$. The number of different rewrite systems we can generate from $J$ is $2^{|J|}$.
 
 \begin{definition}
-  We say a pattern-rewriting system $R$ is \emph{disjoint} if $\dom(R) \cap \img(R) = \emptyset$.
+  We say a pattern-rewriting system $R$ is \emph{disjoint} if 
+  \[
+    \dom(R) \cap \img(R) = \emptyset.
+  \]
 \end{definition}
 
 \begin{example}
@@ -309,7 +313,7 @@ Practically, we generate a system from a family of equivalences by taking each p
     123 \patternrule 321 \\
     213 \patternrule 321
   \end{gather*}
-  is even while
+  is even while the system
   \begin{gather*}
     12 \patternrule 21 \\
     123 \patternrule 321 
@@ -351,19 +355,20 @@ Let's take one example from Claesson's paper.
     3.3 in Claesson's paper, we also have a confluent system. We then end up with
     the system 
     \[
-        \{ 21 \patternrule 12, 231 \patternrule 312 \}
+      \begin{matrix}
+        21 \patternrule 12 \\
+        231 \patternrule 312
+      \end{matrix}
     \]
     which is the result we are focusing on in this article.
 
-    By his machinery, we find that 
+    With Claesson's machinery and our terminating and confluent system, we find that 
     \[
         \sum_{n \geq 1} \Sym_n(21, 231) = \sum_{m \geq 0} m!(x-x^2)^m
     \]
     which is the joint distribution of the equivalence classes defined by 
     $\{ \{ 12, 21 \} \}$, as shown by Stanley \cite{stanley:2012}.
 \end{example}
-
-Let us also introduce a new concept:
 
 We will look more at increasing statistics and show that if systems fulfil a certain property called
 \emph{overlap invariance} then they are terminating due to a certain increasing statistic.
@@ -374,11 +379,11 @@ single set of equivalent patterns. We introduce a new type of statistic which ca
 termination of pattern-rewriting systems generated from families with multiple equivalences.
 
 \subsection{Overlap invariance}
-Let us begin by generalizing the sigma statistic Claesson introduced in his paper.
+Let us begin by generalizing the sigma statistic Claesson introduced in his paper,
 \begin{definition}
     A sigma statistic parameterized by a set of patterns $\Pi$ is defined as
     \[
-        \Sigma_\Pi = \sum_{\pi \in \Pi} \Sigma_{\pi}.
+        \Sigma_\Pi = \sum_{\pi \in \Pi} \Sigma_{\pi},
     \]
 \end{definition}
 alongside reiterating the definition of $\Ocal$:
@@ -395,18 +400,18 @@ alongside reiterating the definition of $\Ocal$:
     (Note we use cluster both as a verb and a noun.)
 \end{definition}
 
-Then, we will define a cluster \emph{overlap} and the function $\ovl$.
+Then, we can define a cluster \emph{overlap} and the function $\ovl$.
 \begin{definition}
   When two patterns or permutations cluster we call the bit they share their \emph{overlap}.
   For permutations $a$ and $b$, we define $\ovl(a,b)$ as the maximum length of their overlaps if they 
   cluster. If they do not cluster then we set $\ovl(a,b)=0$, the length of their overlap is zero.
 
-  For example $\ovl(213, 123) = 1$ since $\Ocal(213, 123) = \{ 21\underline{3}45 \}$. For $\ovl(123, 123) = 2$
+  For example $\ovl(213, 123) = 1$ since $\Ocal(213, 123) = \{ 21\underline{3}45 \}$. Further, $\ovl(123, 123) = 2$
   because $\Ocal(123, 123) = \left\{ 1\underline{23}4, 12\underline{3}45 \right\}$. Finally
   $\ovl(123, 321)=0$ since $123$ does not cluster with $321$.
 \end{definition}
 
-We can then define \emph{overlap invariance} with respect to a set of patterns $T$.
+We finally are able to define \emph{overlap invariance} with respect to a set of patterns $T$.
 \begin{definition}
     Let $R$ be a pattern-rewriting system. If
     \[
@@ -435,20 +440,19 @@ with some pattern in $T$ to its right, then that rule does not alter the overlap
   same and clusters with a new image pattern.
   
   Let us look at the following permutation, which has the occurrences of $\img(R)$ marked bold and
-  occurrences of $\dom(R)$ underlined.
+  occurrences of $\dom(R)$ underlined,
   \[
-    \underline{12\bm{3}}\bm{54}
+    \underline{12\bm{3}}\bm{54}.
   \]
   We apply the rule $123 \patternrule 213$ to get the permutation
   \[
-    \bm{21\bm{3}}\bm{54}
+    \bm{21\bm{3}}\bm{54}.
   \]
   Since the system is overlap invariant with respect to $\img(R)$ the occurrence of the pattern 132 was left unchanged while
   an occurrence of 213 was added.
 \end{example}
 
 This leads us to a new lemma:
-
 \begin{lemma}
   If $R$ is a pattern-rewriting system that is even, disjoint and $\img(R)$-overlap invariant 
   then $\Sigma_{\img(R)}$ is an increasing statistic with respect to $R$. 
@@ -544,14 +548,14 @@ $R'$.
 We have to make sure that an application of a rule to a permutation $x$ must either add occurrences of $\img(R)$, move them
 to the right while not ruining occurrences of any of the images present in $x$.
 
-Let us draw up a general scenario with a system $R$ and say ("\_" is just a placeholder for some
-pattern we do not care about)
+Let us draw up a general scenario with a system $R$ and say 
 \[
   \left\{ \pi_1 \patternrule \rho_1, \pi_2 \patternrule \rho_2, 
   \_ \patternrule \rho_a, \_ \patternrule \rho_b \right\} \subseteq R.
 \]
+Here, "\_" is just a placeholder for some pattern we do not care about.
 
-Here in the following graph, we let a juxtaposition of two symbols represent a cluster of theirs. A bold
+In the following graph, we let a juxtaposition of two symbols represent a cluster of theirs. A bold
 symbol means that the pattern is unaltered, a proper occurrence of the pattern, but a normal-width
 symbol represents that the pattern has been spoiled by a rule application.
 
@@ -592,7 +596,7 @@ and one that matches is
     \begin{matrix}
         123 \patternrule 312 \\
         132 \patternrule 312 \\
-        231 \patternrule 321 \\
+        231 \patternrule 321.
     \end{matrix}
 \]
 We then run our confluentzation algorithm on this terminating system
@@ -603,7 +607,7 @@ and get the system
         132 \patternrule 312 \\
         231 \patternrule 321 \\
         3124 \patternrule 1423 \\
-        31254 \patternrule 12534
+        31254 \patternrule 12534.
     \end{matrix}
 \]
 This system is both confluent and terminating, which is our end goal.
@@ -616,29 +620,32 @@ permutations that avoid $\dom(R)$ with Claesson's method and get the joint distr
 \end{example}
 
 \begin{example}
-Let $J = \{ \{ 123, 132, 312 \}, \{ 231, 321 \} \}$. There exists a system $R$ which is even,
-disjoint and $\img(R)$-overlap invariant, hence terminating pattern-rewriting system
+
+Let $J = \{ \{ 132, 213, 231, 312, 321 \} \}$. There exists a system $R$ which is even,
+disjoint and $\img(R)$-overlap invariant, hence a terminating pattern-rewriting system
 \[
     \begin{matrix}
-        123 \patternrule 312 \\
-        132 \patternrule 312 \\
-        231 \patternrule 321
+      132 \patternrule 321 \\
+      213 \patternrule 321 \\
+      231 \patternrule 321 \\
+      312 \patternrule 321
     \end{matrix}
 \]
-which we can make confluent with our algorithm and get the system:
+which we can make confluent with our algorithm and get the system
 \[
     \begin{matrix}
-        123 \patternrule 312 \\
-        132 \patternrule 312 \\
-        231 \patternrule 321 \\
-        3124 \patternrule 1423 \\
-        31254 \patternrule 12534
+      132 \patternrule 321 \\
+      213 \patternrule 321 \\
+      231 \patternrule 321 \\
+      312 \patternrule 321 \\
+      3214 \patternrule 1432 \\
+      32154 \patternrule 21543.
     \end{matrix}
 \]
 With Claesson's methods, we find that the cluster generating function of that system is $-3x^3$ and
 again by Theorem 2.1 and Corollary 3.2 in his paper, we have that the joint distribution is
 \[
-  \sum_{m \geq 0} m! (-3x^3 + x)^m.
+  \sum_{m \geq 0} m! (\frac{-2x^5-3x^4-3x^3+x^2+x}{x^2+x+1})^m.
 \]
 
 \end{example}
@@ -674,8 +681,11 @@ To test the efficacy of the overlap invariance idea we look at every set partiti
 \[
   \Sym_3 = \left\{ 123, 132, 213, 231, 312, 321 \right\}.
 \]
-Those are 203, of those are 155 families of equivalences from which we can derive overlap
-invariant systems.
+We see that all these set partitions can only generate even systems, since all their patterns are of
+the same length.
+Those are 203, of those are 155 families of equivalences from which we can derive disjoint and
+$\img(R)$-overlap invariant systems. 
+
 If two families of equivalences induce equivalence relations that have the same joint distribution
 then we say the families are in the same \emph{Wilf-class}.
 Calculating the joint distribution of those systems gives us nine different Wilf-classes.
@@ -687,7 +697,7 @@ Calculating the joint distribution of those systems gives us nine different Wilf
     By this definition 
     \begin{align*}
       & | \{ \{ 123, 321 \}, \{ 312, 231, 213 \} \}| =  \\
-      & | \{ \{ 123, 321 \}, \{ 312, 231 \}, \{ 312, 213 \} \} | =  3
+      & | \{ \{ 123, 321 \}, \{ 312, 231 \}, \{ 312, 213 \} \} | =  3.
     \end{align*}
 \end{definition}
 
@@ -719,15 +729,16 @@ is also $C'''_J$. We include it in our table to show that the pattern emerges.
     \hline
     5 & $\frac{-5x^3-3x^4-x^5}{x^2+x+1}$ & 1 & \emph{Not present} \\ 
 \end{tabular}
+\captionof{table}{Cluster generating functions and their frequency}
 \end{center}
 If we parameterize each $C_J$ with its corresponding $|J|$ value then we have
 three different types of cluster generating functions.
 
 Those types are 
 \begin{gather*}
-  C'_J(x) = -|J|x^3 \\
-  C''_J(x) = \frac{-|J|x^3-(|J|-1)x^4-(|J|-2)x^5}{x^2+x+1} \\
-  C'''_J(x) = \frac{-|J|x^3-(|J|-2)x^4-(|J|-4)x^5}{x^2+x+1}
+  C'_J(x) = -|J|x^3, \\
+  C''_J(x) = \frac{-|J|x^3-(|J|-1)x^4-(|J|-2)x^5}{x^2+x+1}, \\
+  C'''_J(x) = \frac{-|J|x^3-(|J|-2)x^4-(|J|-4)x^5}{x^2+x+1}.
 \end{gather*}
 
 Thus, these partitions of $\Sym_3$ are split into three different types
@@ -762,7 +773,7 @@ confluent, or even all terminating systems?
 
 \begin{openproblem}
     Find a terminating statistic for equivalence relations
-    defined by partitions of $\Sym_3$ that do not have a corresponding $\img(R)$ overlap invariant system.
+    defined by partitions of $\Sym_3$ that do not have a corresponding $\img(R)$-overlap invariant system.
 \end{openproblem}
 
 \section*{Acknowledgments}
