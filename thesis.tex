@@ -186,7 +186,7 @@ but they could be any other member of the respective sets.
 
 In this paper, we denote the set of permutations of length $n$ as $\Sym_n$, also known as the
 symmetric group of $n$ letters. We then define the group of all permutations as $\Sym =
-\cup_{n \geq 1} \Sym_n$.
+\bigcup_{n \geq 1} \Sym_n$.
 
 Again, a collection of sets of equivalent patterns induces a pattern-replacement equivalence.
 To put it in more formal language, a family of equivalences $J$ will induce an equivalence relation
@@ -203,7 +203,7 @@ or
   \bm{132}4\bm{765} \equiv_J \bm{321}4\bm{576}
 \]
 
-An equivalence relation on $\Sym = \cup_{n \geq 1} \Sym_n$ splits each $\Sym_n$
+An equivalence relation on $\Sym = \bigcup_{n \geq 1} \Sym_n$ splits each $\Sym_n$
 into a set of equivalence classes which we want to enumerate for each $n$. 
 
 Linton et al. has already made some headway on enumerating equivalence classes of patterns that constrain
@@ -219,7 +219,7 @@ some manual work. The work involves finding systems that fulfil a certain proper
 \emph{termination}.
 
 \subsection{Pattern-rewriting systems}
-A \emph{pattern-rewriting system} is a subset $R \subset \cup_{n} (\Sym_n \times \Sym_n)$.
+A \emph{pattern-rewriting system} is a subset $R \subset \bigcup_{n} (\Sym_n \times \Sym_n)$.
 We use the notation $\pi \patternrule \rho$ for $(\pi, \rho)$ when referring
 to elements of a pattern-rewriting system $R$.
 
@@ -491,7 +491,7 @@ confluent:
 \begin{lemma}[Lemma 3.3 \cite{claesson:2021}]
     Let $R$ be a terminating pattern-rewriting system. Let 
     \begin{equation*}
-        \Ocal(R) = \cup_{\pi_1, \pi_2} \Ocal(\pi_1, \pi_2),
+        \Ocal(R) = \bigcup_{\pi_1, \pi_2} \Ocal(\pi_1, \pi_2),
     \end{equation*}
     where the union is over all pairs $(\pi_1, \pi_2) \in \dom(R) \times \dom(R)$. If, for all
     $\pi \in \Ocal(R)$,
@@ -625,7 +625,7 @@ disjoint and $\img(R)$-overlap invariant, hence terminating pattern-rewriting sy
         231 \patternrule 321
     \end{matrix}
 \]
-which we can make confluent:
+which we can make confluent with our algorithm and get the system:
 \[
     \begin{matrix}
         123 \patternrule 312 \\
@@ -691,7 +691,7 @@ Calculating the joint distribution of those systems gives us nine different Wilf
     \end{align*}
 \end{definition}
 
-Let us collate all the results from Appendix B into a table to show how the
+Let us collate all the results from Appendix A into a table to show how the
 different generating functions are distributed.
 
 The joint distribution is always on the form $\sum_{m \geq 0}m!(x+C_J(x))^m$ where $C_J$
@@ -784,8 +784,11 @@ field of combinatorics and giving me this interesting problem to tackle.
 
 \newgeometry{left=2cm,right=2cm,top=2cm,bottom=2cm}
 \section{Resulting systems}
-We categorize the equivalence families/equivalence relations by what their joint
-distribution is.
+We categorize the families of equivalences by what their joint
+distribution is, or namely their Wilf-class.
+Each heading includes the joint distribution, the cluster generating function and if the enumeration
+appears in the OEIS, its OEIS sequence.
+
 \begin{multicols}{2}
 \include{appendix}
 \end{multicols}

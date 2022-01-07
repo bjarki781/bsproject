@@ -53,7 +53,7 @@ def sequence(xclustergf, n):
     try:
         return (tuple(t), oeis.find_by_subsequence(t, 1)[0].id())
     except:
-        return (tuple(t), 'Not found')
+        return (tuple(t), 'Not present')
 
 
 def show_permutation(prm):

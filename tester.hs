@@ -32,7 +32,7 @@ main = do
     txt <- readFile "appendix.raw" 
     let ok = all (verify . read) $ lines txt
 
-    putStrLn (if ok then "OK!" else "Not OK!")
+    putStrLn (if ok then "Test OK!" else "Test not OK!")
 
 tester = map (\eqs -> (eqs, test 6 eqs)) $ map (filter (\p -> length p > 1)) $ partitions $ sym 3
 
