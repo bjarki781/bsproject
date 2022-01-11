@@ -410,8 +410,8 @@ Then, we can define a cluster \emph{overlap} and the function $\ovl$.
     \ovl(\sigma, \tau) = 
       \begin{cases}
         \max\limits_{\kappa \in \Ocal(\sigma, \tau)} |\sigma| + |\tau| - |\kappa| & \mbox{ if } \Ocal(\sigma, \tau) \neq \emptyset \\
-        0 & \text{ if $\Ocal(\sigma, \tau) = \emptyset$}
-      \end{cases}.
+        0 & \text{ if $\Ocal(\sigma, \tau) = \emptyset$}.
+      \end{cases}
   \]
 
   For example:
@@ -538,14 +538,12 @@ confluentize(sys, f):
     if sys is confluent then
         return sys
 
-    s := choose shortest cluster in O(R) with more than one normal form
+    s := shortest cluster in O(R) with more than one normal form
     rules := { a -> b | a, b are normal forms of s, f(b) - f(a) > 0 }
-
     if rules = $\emptyset$ then
         return failure
 
-    rule := rule@(a -> b) from rules chosen by the maximum f(b) - f(a) value
-
+    rule := rule@(a -> b) from rules chosen by maximum f(b) - f(a)
     return confluentize(sys + rule, f)
 \end{lstlisting}
 \end{minipage}
@@ -661,7 +659,8 @@ which we can make confluent with our algorithm, and get the system
       32154 \patternrule 21543.
     \end{matrix}
 \]
-With Claesson's methods, we find that the cluster generating function of that system is $-3x^3$ and
+With Claesson's methods, we find that the cluster generating function of that system is
+$\frac{-2x^5-3x^4-4x^3}{x^2+x+1}$ and
 again by Theorem 2.1 and Corollary 3.2 in his paper, we have that the generating function for the
 number of equivalence classes induced by $J$ is
 \[
@@ -698,7 +697,7 @@ then get the family of equivalences
   \left\{ \left\{ 123, 132 \right\}, \left\{ 231, 312 \right\} \right\}.
 \]
 
-To test the efficacy of the overlap invariance idea we look at every set partition of 
+To test the efficacy of the overlap invariance idea we look at every set partition~of 
 \[
   \Sym_3 = \left\{ 123, 132, 213, 231, 312, 321 \right\}.
 \]
@@ -730,11 +729,6 @@ different generating functions are distributed.
 The generating function is always on the form $\sum_{m \geq 0}m!(x+C_J(x))^m$ where $C_J$
 is the cluster generating function corresponding to a system derived from $J$.
 
-For $C'''_J$ we only generated one system whereas Claesson had generated a system for
-$J = \{\{ 123, 132, 213, 231, 312, 321 \}\}$ which cluster generating function
-is also $C'''_J$. We include it in our table to show that the pattern emerges.
-
-
 \begin{center}
 \begin{tabular}{c|c|c|c}
     $|J|$ & $C_J(x)$ & count & OEIS seq. \\
@@ -763,6 +757,10 @@ Those types are
   C''_J(x) = \frac{-|J|x^3-(|J|-1)x^4-(|J|-2)x^5}{x^2+x+1}, \\
   C'''_J(x) = \frac{-|J|x^3-(|J|-2)x^4-(|J|-4)x^5}{x^2+x+1}.
 \end{gather*}
+
+For $C'''_J$ we only generated one system (Appendix A: (126)) whereas Claesson generated a system for
+$J = \{\{ 123, 132, 213, 231, 312, 321 \}\}$, which we did not manage. Its cluster generating function
+is also of the type $C'''_J$. We include it in our table to show that the pattern emerges.
 
 Thus, these partitions of $\Sym_3$ are split into three different types
 of Wilf-classes, which we can describe by $C'$, $C''$, and $C'''$; and the size

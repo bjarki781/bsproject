@@ -61,7 +61,7 @@ def show_permutation(prm):
 
 def show_rule(rule):
     target, result = rule
-    return show_permutation(target) + ' \\mapsto ' + show_permutation(result)
+    return show_permutation(target) + ' \\to ' + show_permutation(result)
 
 def show_equivalence(eq):
     return '\{' + ', '.join([show_permutation(prm) for prm in eq]) + '\}'
