@@ -2,21 +2,24 @@ import Data.Maybe
 import Data.List
 import Data.Ord
 import Data.Char
+import qualified Data.Vector as V
+
+sortUniq = sort . nub
 
 -- we differentiate between Perm=Permutation and [Int], 
 -- [Int] is a permutation slice, which is not necesarily a valid
 -- permutation, like [7,6,8]
 -- We expect Perm to be a normalized, a permutation of [1..n]
-type Perm = [Int]
+type Perm = Vector Int
 type Rule = (Perm, Perm)
 type System = [Rule]
 type Equivalence = [Perm]
 
 dom :: System -> [Perm]
-dom system = nub [target | (target, _) <- system]
+dom system = sortUniq [target | (target, _) <- system]
 
 img :: System -> [Perm]
-img system = nub [result | (_, result) <- system]
+img system = sortUniq [result | (_, result) <- system]
 
 -- auxillary function for testing, allows us to write (prm 123) instead of [1,2,3]
 prm :: Int -> Perm
@@ -84,7 +87,7 @@ is_permutation s = all (\i -> count i s == 1) [1..length s]
   where 
     count x = length . filter (x==)
 
--- the O(r,s), r,s permutations, function in Ander's paper, given two permutation return a 
+-- the O(r,s), r,s permutations, function in Anders' paper, given two permutation return a 
 -- list of how they can cluster
 findClusters :: Perm -> Perm -> [Perm]
 findClusters p q = filter is_permutation matches

@@ -40,6 +40,9 @@
   \end{tikzpicture}}
 }
 
+\newcommand{\clusterabove}[2]{\overset{#1}{\widehat{#2}}}
+\newcommand{\clusterbelow}[2]{\underset{#1}{\widehat{#2}}}
+
 \newcommand{\patternrule}{ \to \!}
 
 \newtheorem{theorem}{Theorem}[section]
@@ -367,7 +370,7 @@ Let's take one example from Claesson's paper.
 \end{example}
 
 We will look more at increasing statistics, and show that if systems fulfill a certain property called
-\emph{overlap invariance}, then they are terminating due to a certain increasing statistic.
+\emph{right-hand image preserving}, then they are terminating due to a certain increasing statistic.
 
 \section{Finding terminating and confluent systems}
 Claesson only found systems corresponding to equivalence relations induced by a
@@ -423,16 +426,16 @@ Then, we can define a cluster \emph{overlap} and the function $\ovl$.
   \end{align*}
 \end{definition}
 
-We are able to define \emph{overlap invariance with respect to a set of patterns $T$}.
+We say a rule preserves some part of its left hand side if it stays the
+same on the right hand side. $123 -> 132$ preserves the 1 at the beginning.
+
+We are able to define \emph{right-hand image preserving}.
 \begin{definition}
-    Let $R$ be a pattern-rewriting system. If
-    \[
-        \pi_i = \rho_i, |\pi|-m+1 \leq i \leq |\pi| \  \textnormal{where}
-        \ m = \max\nolimits_{\tau \in T} \ovl(\pi, \tau)
-    \]
-    for each $\pi \patternrule \rho \in R$,
-    then we say the system is \emph{overlap invariant with respect to $T$} or \emph{$T$-overlap
-    invariant}.
+    Let $R$ be a pattern-rewriting system. We call a system that fulfils the following condition
+    \emph{right-hand image preserving}.
+    Every element $a_i$ from $\dom(R)$ that overlaps to its right with an element $b_j$ of $\img(R)$ 
+    has a corresponding rule $r_i$ that must preserve the overlap of each element of $\O(a_i, b_j)$.
+
 \end{definition}
 
 The term overlap invariance with respect to $T$ refers to the fact that if a left-hand side of a rule in the system clusters
@@ -470,6 +473,11 @@ This leads us to a new lemma:
   then $\Sigma_{\img(R)}$ is an increasing statistic with respect to $R$. 
 \end{lemma}
 \begin{proof}
+
+  TO PROOF INCREASINGNESS OF THE STATISTIC WE SHOW THAT EACH APPLICATION OF A RULE OF A RIGHT-HAND
+  IMAGE PRESERVING SYSTEM either ADDS AN OCCURRENCE OF At least one ELEMENT OF THE IMAGE OR MOVES at
+  least one to the right
+
   Since the system is disjoint there is no rule $a \patternrule b$ in $R$ with $a, b \in \img(R)$.
   That rule would not move an image pattern to the right, just replace it with another one, which is
   not enough to increase the statistic value of the resulting permutation.
@@ -578,8 +586,9 @@ Let us draw up a general scenario with a system $R$, and say
 Here, "\_" is just a placeholder for some pattern we do not care about. Then we can draw the graph
 \[
 \begin{tikzcd}  
-    & \bm{\rho_a \pi_1 \pi_2 \rho_b} \arrow[dl] \arrow[dr] & \\
-    \rho_a \underline{\bm{\rho_1}\pi_2}\bm{\rho_b} & & \bm{\rho_a}\underline{\pi_1 \bm{\rho_2}} \bm{\rho_b}
+  & \clusterabove{n_1}{r_a p_1} \clusterabove{n_3}{p_2 r_b} \arrow[dl] \arrow[dr] & \\
+  \clusterabove{n}{r_a r_1} \clusterabove{n}{\phantom{p_2} r_b} & & \clusterabove{n}{r_a
+    \phantom{p_1}} \clusterabove{n}{r_2 r_b}
 \end{tikzcd}
 \]
 

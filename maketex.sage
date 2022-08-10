@@ -134,12 +134,14 @@ def generate_latex(seq_dict):
         print('\\end{align}')
     print('\\end{tiny}')
 
+cgffile = open('cgfs.raw', 'w')
 master = {}
 for line in sys.stdin:
     t = eval(line)
     equivs, system, domain, clusters = t
     clustergf = C(domain, clusters)
     xclustergf = x + clustergf
+    print((equivs, clustergf), file=cgffile)
 
     s = sequence(xclustergf, 8)
     u = (equivs, system, domain, clusters, xclustergf, clustergf)
